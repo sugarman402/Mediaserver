@@ -1,0 +1,81 @@
+version: '3'
+services:
+#Management services
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: ${RESTART_POLICY}
+    volumes:
+      - ${PORTAINER_LOCALTIME}:/etc/localtime:ro
+      - ${PORTAINER_DOCKER}:/var/run/docker.sock:ro
+      - ${PORTAINER_DATA}:/data
+    ports:
+      - ${PORTAINER_PORT}:${PORTAINER_PORT}
+
+##Smart home services
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - ${HASS_CONFIG}:/config
+      - ${PORTAINER_LOCALTIME}:/etc/localtime:ro
+    devices:
+     - ${USB_CC2531}:${USB_CC2531}
+    restart: ${RESTART_POLICY}
+    privileged: true
+    ports:
+      - ${HASS_PORT}:${HASS_PORT}
+  
+  zigbee2mqtt:
+    container_name: zigbee2mqtt
+    image: koenkk/zigbee2mqtt
+    restart: ${RESTART_POLICY}
+    volumes:
+      - ${Z2M_CONFIG}:/app/data
+      - /run/udev:/run/udev:ro
+    ports:
+      - ${Z2M_PORT}:${Z2M_PORT}
+    environment:
+      - TZ=${TIMEZONE}
+    devices:
+      - ${USB_CC2531}:/dev/ttyACM0
+  
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto
+    volumes:
+      - ${MOSQUITTO_CONFIG}:/mosquitto/:rw
+    ports:
+      - ${MOSQUITTO_PORT1}:${MOSQUITTO_PORT1}
+      - ${MOSQUITTO_PORT2}:${MOSQUITTO_PORT2}
+    restart: ${RESTART_POLICY}
+
+##Metrics exporters
+  cadvisor:
+    container_name: cadvisor
+    image: budry/cadvisor-arm
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    ports:
+      - ${CADVISOR_PORT}:8080
+    restart: ${RESTART_POLICY}
+
+  node-exporter:
+    container_name: node-exporter
+    image: prom/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - ${NODEEXP_PORT}:${NODEEXP_PORT}
+    restart: ${RESTART_POLICY}
