@@ -1,0 +1,413 @@
+version: '3'
+networks:
+  proxy:
+    driver: bridge
+    name: ${TRAEFIK_NETWORK}
+services:
+
+#Administration & Management stack
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: ${RESTART_POLICY}
+    volumes:
+      - ${PORTAINER_LOCALTIME}:/etc/localtime:ro
+      - ${PORTAINER_DOCKER}:/var/run/docker.sock:ro
+      - ${PORTAINER_DATA}:/data
+    ports:
+      - ${PORTAINER_PORT}:${PORTAINER_PORT}
+
+  traefik:
+    image: "traefik:v2.5"
+    restart: ${RESTART_POLICY}
+    container_name: "traefik"
+    command:
+      - "--log.level=${TRAEFIK_LOGLEVEL}"
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:${TRAEFIK_WEB_PORT}"
+      - "--entrypoints.websecure.address=:${TRAEFIK_WEBSECURE_PORT}"
+      - "--entrypoints.traefik.address=:${TRAEFIK_DASHBOARD_PORT}"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.caserver=${TRAEFIK_CASERVER}"
+      - "--certificatesresolvers.myresolver.acme.email=${TRAEFIK_CASERVER_EMAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=${TRAEFIK_ACMESTORAGE}"
+      - "--metrics.prometheus=true"
+      - "--accesslog=true"
+      - "--accesslog.filepath=access.log"
+      - "--accesslog.fields.defaultmode=keep"
+      - "--accesslog.fields.names.ClientUsername=drop"
+      - "--accesslog.fields.headers.defaultmode=keep"
+      - "--accesslog.fields.headers.names.User-Agent=keep"
+      - "--accesslog.fields.headers.names.Authorization=drop"
+      - "--accesslog.fields.headers.names.Content-Type=drop"
+      - "--metrics.prometheus.addEntryPointsLabels=true"
+      - "--metrics.prometheus.addServicesLabels=true"
+      - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
+    ports:
+      - "${TRAEFIK_WEB_PORT}:${TRAEFIK_WEB_PORT}"
+      - "${TRAEFIK_DASHBOARD_PORT}:${TRAEFIK_DASHBOARD_PORT}"
+      - "${TRAEFIK_WEBSECURE_PORT}:${TRAEFIK_WEBSECURE_PORT}"
+    volumes:
+      - "${TRAEFIK_DOCKER}:/var/run/docker.sock:ro"
+      - ${TRAEFIK_LETSENCRYPT}:/${TRAEFIK_ACMESTORAGE}
+      - ${TRAEFIK_ACCESSLOG}:/access.log
+    networks:
+      - "${TRAEFIK_NETWORK}"
+      - "default"
+
+  plex:
+    image: lscr.io/linuxserver/plex
+    container_name: plex
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - VERSION=docker
+      - PLEX_CLAIM=${PLEX_CLAIM}
+    volumes:
+      - ${PLEX_CONFIG}:/config
+      - ${SERIES_FOLDER}:/{SERIES_MOUNTED}
+      - ${MOVIES_FOLDER}:/{MOVIES_MOUNTED}
+    restart: ${RESTART_POLICY}
+    ports:
+     - ${PLEX_PORT1}:${PLEX_PORT1}/tcp
+     - ${PLEX_PORT1}:${PLEX_PORT1}/udp
+     - 3005:3005/tcp
+     - 8324:8324/tcp
+     - 32469:32469/tcp
+     - 1900:1900/udp
+     - 32410:32410/udp
+     - 32412:32412/udp
+     - 32413:32413/udp
+     - 32414:32414/udp
+    networks:
+      - "${TRAEFIK_NETWORK}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.plex.entrypoints=websecure,web"
+      - "traefik.http.services.plex.loadbalancer.server.port=${PLEX_PORT1}"
+      - "traefik.http.routers.plex.rule=Host(`${TRAEFIK_DOMAIN1}`,`${TRAEFIK_DOMAIN1}`) && PathPrefix(`${PLEX_DOMAINPATH}`)"
+      - "traefik.http.routers.plex.tls.certresolver=${TRAEFIK_RESOLVER1}"
+      - "traefik.http.routers.plex.tls=true"
+
+  tautulli:
+    image: ghcr.io/linuxserver/tautulli
+    container_name: tautulli
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ${TAUTULLI_CONFIG}:/config
+    ports:
+      - ${TAUTULLI_PORT}:${TAUTULLI_PORT}
+    restart: ${RESTART_POLICY}
+    networks:
+      - "${TRAEFIK_NETWORK}"
+      - "default"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tautulli.entrypoints=websecure,web"
+      - "traefik.http.services.tautulli.loadbalancer.server.port=${TAUTULLI_PORT}"
+      - "traefik.http.routers.tautulli.rule=Host(`${TRAEFIK_DOMAIN1}`,`${TRAEFIK_DOMAIN2}`) && PathPrefix(`${TAUTULLI_DOMAINPATH}`)"
+      - "traefik.http.routers.tautulli.tls.certresolver=${TRAEFIK_RESOLVER1}"
+      - "traefik.http.routers.tautulli.tls=true"
+
+  kitana:
+    image: pannal/kitana
+    container_name: kitana
+    command: -B 0.0.0.0:31337 -p /kitana -P
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ${KITANA_CONFIG}:/app/data
+    restart: ${RESTART_POLICY}
+    ports:
+      - ${KITANA_PORT}:${KITANA_PORT}
+    networks:
+      - "${TRAEFIK_NETWORK}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kitana.entrypoints=websecure,web"
+      - "traefik.http.services.kitana.loadbalancer.server.port=${KITANA_PORT}"
+      - "traefik.http.routers.kitana.rule=Host(`${TRAEFIK_DOMAIN1}`,`${TRAEFIK_DOMAIN2}`) && PathPrefix(`${KITANA_DOMAINPATH}`)"
+      - "traefik.http.routers.kitana.tls.certresolver=${TRAEFIK_RESOLVER1}"
+      - "traefik.http.routers.kitana.tls=true"
+
+  radarr:
+    container_name: radarr
+    restart: ${RESTART_POLICY}
+    ports:
+      - ${RADARR_PORT}:${RADARR_PORT}
+    volumes:
+      - ${RADARR_CONFIG}:/config
+      - ${MOVIES_FOLDER}:/{MOVIES_MOUNTED}
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TIMEZONE}
+    image: linuxserver/radarr
+    networks:
+      - "${TRAEFIK_NETWORK}"
+      - "default"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.entrypoints=websecure,web"
+      - "traefik.http.services.radarr.loadbalancer.server.port=${RADARR_PORT}"
+      - "traefik.http.routers.radarr.rule=Host(`${TRAEFIK_DOMAIN1}`,`${TRAEFIK_DOMAIN2}`) && PathPrefix(`${RADARR_DOMAINPATH}`)"
+      - "traefik.http.routers.radarr.tls.certresolver=${TRAEFIK_RESOLVER1}"
+      - "traefik.http.routers.radarr.tls=true"
+
+  sonarr:
+    container_name: sonarr
+    restart: ${RESTART_POLICY}
+    ports:
+      - ${SONARR_PORT}:${SONARR_PORT}
+    volumes:
+      - ${SONARR_CONFIG}:/config
+      - ${SERIES_FOLDER}:/{SERIES_MOUNTED}
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TIMEZONE}
+    image: linuxserver/sonarr
+    networks:
+      - "${TRAEFIK_NETWORK}"
+      - "default"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.entrypoints=websecure,web"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=${SONARR_PORT}"
+      - "traefik.http.routers.sonarr.rule=Host(`${TRAEFIK_DOMAIN1}`,`${TRAEFIK_DOMAIN2}`) && PathPrefix(`${SONARR_DOMAINPATH}`)"
+      - "traefik.http.routers.sonarr.tls.certresolver=${TRAEFIK_RESOLVER1}"
+      - "traefik.http.routers.sonarr.tls=true"
+
+  jackett:
+    container_name: jackett
+    restart: ${RESTART_POLICY}
+    ports:
+      - ${JACKETT_PORT}:${JACKETT_PORT}
+    volumes:
+      - ${JACKETT_CONFIG}:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TIMEZONE}
+    image: linuxserver/jackett
+
+#  utorrent:
+#    image: ekho/utorrent:latest
+#    container_name: utorrent
+#    volumes:
+#      - ${UT_CONFIG}:/utorrent/settings
+#      - ${SERIES_FOLDER}:/{SERIES_MOUNTED}
+#      - ${MOVIES_FOLDER}:/{MOVIES_MOUNTED}
+#      - ${UT_CONFIG}/temp:/utorrent/temp
+#      - ${UT_CONFIG}/autoload:/utorrent/autoload
+#      - ${UT_CONFIG}/data:/data
+#    environment:
+#      UID: 1000
+#      GID: 1000
+#      webui: ng
+#      dir_autoload_delete: "true"
+#      dir_download: /sorozatok,/filmek
+#    ports:
+#      - ${QB_DOWNLOADPORT}:${QB_DOWNLOADPORT}
+#      - ${QB_DOWNLOADPORT}:${QB_DOWNLOADPORT}/udp
+#      - ${QB_PORT}:${QB_PORT}
+#    restart: ${RESTART_POLICY}
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "10m"
+#        max-file: "3"
+#    networks:
+#      - "${TRAEFIK_NETWORK}"
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.utorrent.entrypoints=websecure,web"
+#      - "traefik.http.services.utorrent.loadbalancer.server.port=${QB_PORT}"
+#      - "traefik.http.routers.utorrent.rule=Host(`${TRAEFIK_DOMAIN1}`,`${TRAEFIK_DOMAIN2}`) && PathPrefix(`${UT_DOMAINPATH}`)"
+#      - "traefik.http.routers.utorrent.tls.certresolver=${TRAEFIK_RESOLVER1}"
+#      - "traefik.http.routers.utorrent.tls=true"
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TIMEZONE}
+      - WEBUI_PORT=${QB_PORT}
+    volumes:
+      - ${QB_CONFIG}:/config
+      - ${SERIES_FOLDER}:/{SERIES_MOUNTED}
+      - ${MOVIES_FOLDER}:/{MOVIES_MOUNTED}
+    ports:
+      - ${QB_DOWNLOADPORT}:${QB_DOWNLOADPORT}
+      - ${QB_DOWNLOADPORT}:${QB_DOWNLOADPORT}/udp
+      - ${QB_PORT}:${QB_PORT}
+    restart: ${RESTART_POLICY}
+    networks:
+      - "${TRAEFIK_NETWORK}"
+      - "default"
+    labels:
+      - "traefik.enable=true"
+      # adding a slash to the end
+      - "traefik.http.routers.qb.entrypoints=web,websecure"
+      - "traefik.http.routers.qb.rule=Host(`${TRAEFIK_DOMAIN1}`,`${TRAEFIK_DOMAIN2}`) && PathPrefix(`${QB_DOMAINPATH}`)"
+      - "traefik.http.middlewares.qb-redirect.redirectregex.regex=^(.*)${QB_DOMAINPATH}$$"
+      - "traefik.http.middlewares.qb-redirect.redirectregex.replacement=$$1${QB_DOMAINPATH}/"
+      - "traefik.http.middlewares.qb-strip.stripprefix.prefixes=${QB_DOMAINPATH}/"
+      # appropropriate header changes
+      - "traefik.http.middlewares.qb-headers.headers.customrequestheaders.X-Frame-Options=SAMEORIGIN"
+      - "traefik.http.middlewares.qb-headers.headers.customrequestheaders.Referer="
+      - "traefik.http.middlewares.qb-headers.headers.customrequestheaders.Origin="
+      - "traefik.http.routers.qb.middlewares=qb-strip,qb-redirect,qb-headers"
+      # loadbalancer to *not* pass the host header
+      - "traefik.http.services.qb.loadbalancer.server.port=${QB_PORT}"
+      - "traefik.http.services.qb.loadbalancer.passhostheader=false"
+      - "traefik.http.routers.qb.tls.certresolver=${TRAEFIK_RESOLVER1}"
+      - "traefik.http.routers.qb.tls=true"
+
+#Monitoring stack
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.1.0
+    volumes:
+      - ${PROM_CONFIG}/etc/:/etc/prometheus/
+      - ${PROM_CONFIG}:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    dns:
+      - ${LANDNS}
+    ports:
+      - ${PROM_PORT}:${PROM_PORT}
+    links:
+      - cadvisor:cadvisor
+      - alertmanager:alertmanager
+    depends_on:
+      - cadvisor
+    restart: ${RESTART_POLICY}
+
+  node-exporter:
+    container_name: node-exporter
+    image: prom/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - ${NODEEXP_PORT}:${NODEEXP_PORT}
+    restart: ${RESTART_POLICY}
+    deploy:
+      mode: global
+
+  alertmanager:
+    container_name: alertmanager
+    image: prom/alertmanager
+    ports:
+      - ${ALERTMANAGER_PORT2}:${ALERTMANAGER_PORT2}
+      - ${ALERTMANAGER_PORT1}:${ALERTMANAGER_PORT1}
+    volumes:
+      - ${ALERTMANAGER_CONFIG}:/etc/alertmanager/
+    restart: ${RESTART_POLICY}
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+
+  cadvisor:
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    ports:
+      - ${CADVISOR_PORT}:8080
+    restart: ${RESTART_POLICY}
+    deploy:
+      mode: global
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    user: "472"
+    depends_on:
+      - prometheus
+    ports:
+      - ${GRAFANA_PORT}:${GRAFANA_PORT}
+    volumes:
+      - ${GRAFANA_CONFIG}:/var/lib/grafana
+      - ${GRAFANA_CONFIG}/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ${GRAFANA_CONFIG}/config.monitoring
+    restart: ${RESTART_POLICY}
+
+  sonarr-exporter:
+    image: ghcr.io/onedr0p/exportarr:latest
+    container_name: sonarr-exporter
+    command: ["exportarr", "sonarr"]
+    environment:
+      PORT: ${SONARRMETRICS}
+      URL: "http://sonarr:${SONARR_PORT}${SONARR_DOMAINPATH}"
+      APIKEY: "${SONARR_API}"
+      ENABLE_EPISODE_QUALITY_METRICS: "false"
+    ports:
+      - "${SONARRMETRICS}:${SONARRMETRICS}"
+    restart: ${RESTART_POLICY}
+
+  radarr-exporter:
+    container_name: radarr-exporter
+    image: ghcr.io/onedr0p/exportarr:latest
+    command: ["exportarr", "radarr"]
+    environment:
+      PORT: ${RADARRMETRICS}
+      URL: "http://radarr:${RADARR_PORT}${RADARR_DOMAINPATH}"
+      APIKEY: "${RADARR_API}"
+    ports:
+      - "${RADARRMETRICS}:${RADARRMETRICS}"
+    restart: ${RESTART_POLICY}
+
+  qbittorrent-exporter:
+    container_name: qbittorrent-exporter
+    image: esanchezm/prometheus-qbittorrent-exporter
+    environment:
+      QBITTORRENT_HOST: qbittorrent
+      QBITTORRENT_PORT: ${QB_PORT}
+      QBITTORRENT_USER: ${QB_USER}
+      QBITTORRENT_PASS: ${QB_PW}
+      EXPORTER_PORT: ${QBEXP_PORT}
+      EXPORTER_LOG_LEVEL: INFO
+      METRICS_PREFIX: qbittorrent
+    ports:
+      - "${QBEXP_PORT}:${QBEXP_PORT}"
+    restart: ${RESTART_POLICY}
+    networks:
+      - "${TRAEFIK_NETWORK}"
+      - "default"
+
+  tautulli-exporter:
+    container_name: tautulli-exporter
+    image: tubaguy50035/tautulli_exporter
+    environment:
+      TAUTULLI_URI: http://tautulli:${TAUTULLI_PORT}
+      TAUTULLI_API_KEY: ${TAUTULLI_API}
+    ports:
+      - "${TAUTULLIMETRICS}:${TAUTULLIMETRICS}"
+    restart: ${RESTART_POLICY}
