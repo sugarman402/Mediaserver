@@ -385,7 +385,7 @@ services:
   sonarr-exporter:
     image: ghcr.io/onedr0p/exportarr:latest
     container_name: sonarr-exporter
-    command: ["exportarr", "sonarr"]
+    command: ["sonarr"]
     environment:
       PORT: ${SONARRMETRICS}
       URL: "http://sonarr:${SONARR_PORT}${SONARR_DOMAINPATH}"
@@ -398,7 +398,7 @@ services:
   radarr-exporter:
     container_name: radarr-exporter
     image: ghcr.io/onedr0p/exportarr:latest
-    command: ["exportarr", "radarr"]
+    command: ["radarr"]
     environment:
       PORT: ${RADARRMETRICS}
       URL: "http://radarr:${RADARR_PORT}${RADARR_DOMAINPATH}"
