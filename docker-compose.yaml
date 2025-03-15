@@ -18,7 +18,7 @@ services:
       - ${PORTAINER_PORT}:${PORTAINER_PORT}
 
   traefik:
-    image: "traefik:v2.5"
+    image: "traefik:v3.3.4"
     restart: ${RESTART_POLICY}
     container_name: "traefik"
     command:
@@ -209,6 +209,29 @@ services:
       - "traefik.http.routers.sonarr.tls.certresolver=${TRAEFIK_RESOLVER1}"
       - "traefik.http.routers.sonarr.tls=true"
 
+  bazarr:
+    container_name: bazarr
+    restart: ${RESTART_POLICY}
+    ports:
+      - ${BAZARR_PORT}:${BAZARR_PORT}
+    volumes:
+      - ${BAZARR_CONFIG}:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TIMEZONE}
+    image: linuxserver/bazarr
+    networks:
+      - "${TRAEFIK_NETWORK}"
+      - "default"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.entrypoints=websecure,web"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=${BAZARR_PORT}"
+      - "traefik.http.routers.sonarr.rule=Host(`${TRAEFIK_DOMAIN1}`,`${TRAEFIK_DOMAIN2}`) && PathPrefix(`${BAZARR_DOMAINPATH}`)"
+      - "traefik.http.routers.sonarr.tls.certresolver=${TRAEFIK_RESOLVER1}"
+      - "traefik.http.routers.sonarr.tls=true"
+
   jackett:
     container_name: jackett
     restart: ${RESTART_POLICY}
@@ -301,7 +324,7 @@ services:
 
   prometheus:
     container_name: prometheus
-    image: prom/prometheus:v2.1.0
+    image: prom/prometheus
     volumes:
       - ${PROM_CONFIG}/etc/:/etc/prometheus/
       - ${PROM_CONFIG}:/prometheus
