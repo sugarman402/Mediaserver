@@ -169,7 +169,7 @@ services:
 
   homarr:
     container_name: homarr
-    image: ghcr.io/ajnart/homarr
+    image: ghcr.io/homarr-labs/homarr
     restart: ${RESTART_POLICY}
     labels:
       - "needs.stop.for.backup=true"
