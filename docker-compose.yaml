@@ -116,7 +116,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.plex.entrypoints=${TRAEFIK_ENTRYPOINTS}"
       - "traefik.http.services.plex.loadbalancer.server.port=${PLEX_PORT1}"
-      - "traefik.http.routers.plex.rule=Host(`${PLEX_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`,`${PLEX_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
+      - "traefik.http.routers.plex.rule=Host(`${PLEX_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`) || Host(`${PLEX_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
       - "traefik.http.routers.plex.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.plex.tls=true"
 
@@ -139,7 +139,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.tautulli.entrypoints=${TRAEFIK_ENTRYPOINTS}"
       - "traefik.http.services.tautulli.loadbalancer.server.port=${TAUTULLI_PORT}"
-      - "traefik.http.routers.tautulli.rule=Host(`${TAUTULLI_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`,`${TAUTULLI_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
+      - "traefik.http.routers.tautulli.rule=Host(`${TAUTULLI_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`) || Host(`${TAUTULLI_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
       - "traefik.http.routers.tautulli.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.tautulli.tls=true"
 
@@ -162,7 +162,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.kitana.entrypoints=${TRAEFIK_ENTRYPOINTS}"
       - "traefik.http.services.kitana.loadbalancer.server.port=${KITANA_PORT}"
-      - "traefik.http.routers.kitana.rule=Host(`${KITANA_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`,`${KITANA_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
+      - "traefik.http.routers.kitana.rule=Host(`${KITANA_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`) || Host(`${KITANA_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
       - "traefik.http.routers.kitana.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.kitana.tls=true"
 
@@ -177,7 +177,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.homarr.entrypoints=${TRAEFIK_ENTRYPOINTS}"
       - "traefik.http.services.homarr.loadbalancer.server.port=${HOMARR_PORT}"
-      - "traefik.http.routers.homarr.rule=Host(`${HOMARR_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`,`${HOMARR_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
+      - "traefik.http.routers.homarr.rule=Host(`${HOMARR_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`) || Host(`${HOMARR_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
       - "traefik.http.routers.homarr.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.homarr.tls=true"
     environment:
@@ -212,7 +212,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.radarr.entrypoints=${TRAEFIK_ENTRYPOINTS}"
       - "traefik.http.services.radarr.loadbalancer.server.port=${RADARR_PORT}"
-      - "traefik.http.routers.radarr.rule=Host(`${RADARR_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`,`${RADARR_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
+      - "traefik.http.routers.radarr.rule=Host(`${RADARR_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`) || Host(`${RADARR_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
       - "traefik.http.routers.radarr.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.radarr.tls=true"
 
@@ -237,7 +237,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.sonarr.entrypoints=${TRAEFIK_ENTRYPOINTS}"
       - "traefik.http.services.sonarr.loadbalancer.server.port=${SONARR_PORT}"
-      - "traefik.http.routers.sonarr.rule=Host(`${SONARR_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`,`${SONARR_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
+      - "traefik.http.routers.sonarr.rule=Host(`${SONARR_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`) || Host(`${SONARR_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
       - "traefik.http.routers.sonarr.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.sonarr.tls=true"
 
@@ -271,7 +271,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.bazarr.entrypoints=${TRAEFIK_ENTRYPOINTS}"
       - "traefik.http.services.bazarr.loadbalancer.server.port=${BAZARR_PORT}"
-      - "traefik.http.routers.bazarr.rule=Host(`${BAZARR_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`,`${BAZARR_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
+      - "traefik.http.routers.bazarr.rule=Host(`${BAZARR_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`) || Host(`${BAZARR_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
       - "traefik.http.routers.bazarr.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.bazarr.tls=true"
     volumes:
@@ -297,7 +297,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.overseerr.entrypoints=${TRAEFIK_ENTRYPOINTS}"
       - "traefik.http.services.overseerr.loadbalancer.server.port=${OVERSEERR_PORT}"
-      - "traefik.http.routers.overseerr.rule=Host(`${OVERSEERR_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`,`${OVERSEERR_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
+      - "traefik.http.routers.overseerr.rule=Host(`${OVERSEERR_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`) || Host(`${OVERSEERR_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
       - "traefik.http.routers.overseerr.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.overseerr.tls=true"
     volumes:
@@ -351,7 +351,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.qb.entrypoints=web,websecure"
-      - "traefik.http.routers.qb.rule=Host(`${QB_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`,`${QB_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
+      - "traefik.http.routers.qb.rule=Host(`${QB_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`) || Host(`${QB_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
       # approproiate header changes
       - "traefik.http.middlewares.qb-headers.headers.customrequestheaders.X-Frame-Options=SAMEORIGIN"
       - "traefik.http.middlewares.qb-headers.headers.customrequestheaders.Referer="
