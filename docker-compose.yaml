@@ -92,6 +92,7 @@ services:
       - PGID=1000
       - VERSION=docker
       - PLEX_CLAIM=${PLEX_CLAIM}
+      - ADVERTISE_IP=http://${DOCKER_HOST_IP}:${PLEX_PORT1}/
     volumes:
       - ${PLEX_CONFIG}:/config
       - ${SERIES_FOLDER}:/${SERIES_FOLDER}
@@ -179,9 +180,10 @@ services:
       - "traefik.http.routers.homarr.rule=Host(`${HOMARR_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`,`${HOMARR_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
       - "traefik.http.routers.homarr.tls.certresolver=${TRAEFIK_RESOLVER1}"
       - "traefik.http.routers.homarr.tls=true"
+    environment:
+      - SECRET_ENCRYPTION_KEY=${HOMARR_ENCRYPTION_KEY}
     volumes:
-      - ${HOMARR_CONFIG}:/app/data/configs
-      - ${HOMARR_CONFIG}/icons:/app/public/icons
+      - ${HOMARR_CONFIG}:/appdata
       - ${PORTAINER_DOCKER}:/var/run/docker.sock:ro
     ports:
       - ${HOMARR_PORT}:${HOMARR_PORT}
