@@ -119,6 +119,30 @@ services:
       - "traefik.http.routers.plex.rule=Host(`${PLEX_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`) || Host(`${PLEX_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
       - "traefik.http.routers.plex.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.plex.tls=true"
+  
+  scheduler:
+    image: mcuadros/ofelia
+    container_name: scheduler
+    restart: ${RESTART_POLICY}
+    depends_on:
+      - plextraktsync
+    command: daemon --docker
+    volumes:
+      - ${DOCKER_SOCK}:${DOCKER_SOCK}:ro
+    labels:
+      ofelia.job-exec.plextraktsync.schedule: "@every 6h"
+      ofelia.job-exec.plextraktsync.container: "plextraktsync"
+      ofelia.job-exec.plextraktsync.command: "plextraktsync sync"
+  
+  plextraktsync:
+    image: ghcr.io/taxel/plextraktsync
+    container_name: plextraktsync
+    command: sync
+    volumes:
+      - ${TRAKT_SYNC_CONFIG}:/app/config
+    networks:
+      - "${TRAEFIK_NETWORK}"
+      - "default"
 
   tautulli:
     image: ghcr.io/linuxserver/tautulli
