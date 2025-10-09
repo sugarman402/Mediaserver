@@ -137,7 +137,7 @@ services:
   plextraktsync:
     image: ghcr.io/taxel/plextraktsync
     container_name: plextraktsync
-    command: sync
+    command: watch
     depends_on:
       - plex
     volumes:
