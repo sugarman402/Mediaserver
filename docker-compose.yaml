@@ -138,6 +138,7 @@ services:
     image: ghcr.io/taxel/plextraktsync
     container_name: plextraktsync
     command: watch
+    restart: ${RESTART_POLICY}
     depends_on:
       - plex
     volumes:
