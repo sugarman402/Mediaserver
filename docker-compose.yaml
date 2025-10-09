@@ -130,7 +130,7 @@ services:
     volumes:
       - ${DOCKER_SOCK}:${DOCKER_SOCK}:ro
     labels:
-      ofelia.job-exec.plextraktsync.schedule: "@every 6h"
+      ofelia.job-exec.plextraktsync.schedule: "@every 1h"
       ofelia.job-exec.plextraktsync.container: "plextraktsync"
       ofelia.job-exec.plextraktsync.command: "plextraktsync sync"
   
@@ -138,6 +138,8 @@ services:
     image: ghcr.io/taxel/plextraktsync
     container_name: plextraktsync
     command: sync
+    depends_on:
+      - plex
     volumes:
       - ${TRAKT_SYNC_CONFIG}:/app/config
     networks:
