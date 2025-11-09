@@ -1,0 +1,51 @@
+scrape_configs:
+  - job_name: 'node-exporter'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          app: 'node-exporter'
+          host: 'mediaserver'
+  - job_name: 'cadvisor'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          app: 'cadvisor'
+          host: 'mediaserver'
+  - job_name: 'sonarr-exporter'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['sonarr-exporter:9707']
+        labels:
+          app: 'sonarr-exporter'
+          host: 'mediaserver'
+  - job_name: 'radarr-exporter'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['radarr-exporter:9708']
+        labels:
+          app: 'radarr-exporter'
+          host: 'mediaserver'
+  - job_name: 'traefik'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['traefik:8090']
+        labels:
+          app: 'traefik'
+          host: 'mediaserver'
+  - job_name: 'hassbian-node-exporter'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['hassbian:9100']
+        labels:
+          app: 'node-exporter'
+          host: 'hassbian'
+  - job_name: 'qbittorrent-exporter'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['qbittorrent-exporter:8000']
+        labels:
+          app: 'qbittorrent-exporter'
+          host: 'mediaserver'
+
