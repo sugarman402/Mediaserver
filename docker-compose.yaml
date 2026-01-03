@@ -20,6 +20,7 @@ services:
     image: traefik
     restart: ${RESTART_POLICY}
     container_name: "traefik"
+    network_mode: "host"  # Required for binding to host ports 80/443
     command:
       - "--log.level=${TRAEFIK_LOGLEVEL}"
       - "--api.insecure=true"
@@ -55,9 +56,7 @@ services:
       - "${DOCKER_SOCK}:${DOCKER_SOCK}:ro"
       - "${TRAEFIK_LETSENCRYPT}:/letsencrypt"
       - "${TRAEFIK_FOLDER}:${TRAEFIK_LOGS_FOLDER}"
-    networks:
-      - "${TRAEFIK_NETWORK}"
-      - "default"
+    # Using host network mode for direct port binding
 
 #   samba:
 #     image: dperson/samba
@@ -87,6 +86,7 @@ services:
   plex:
     image: lscr.io/linuxserver/plex
     container_name: plex
+    network_mode: "host"  # Required for optimal Plex performance and discovery
     environment:
       - PUID=1000
       - PGID=1000
@@ -109,8 +109,7 @@ services:
      - 32412:32412/udp
      - 32413:32413/udp
      - 32414:32414/udp
-    networks:
-      - "${TRAEFIK_NETWORK}"
+    # Port mappings are ignored in host network mode but kept for documentation
     labels:
       - "needs.stop.for.backup=true"
       - "traefik.enable=true"
@@ -194,29 +193,6 @@ services:
       - "traefik.http.routers.kitana.tls=true"
 
 # Arr stack
-
-  homarr:
-    container_name: homarr
-    image: ghcr.io/homarr-labs/homarr
-    restart: ${RESTART_POLICY}
-    labels:
-      - "needs.stop.for.backup=true"
-      - "traefik.enable=true"
-      - "traefik.http.routers.homarr.entrypoints=${TRAEFIK_ENTRYPOINTS}"
-      - "traefik.http.services.homarr.loadbalancer.server.port=${HOMARR_PORT}"
-      - "traefik.http.routers.homarr.rule=Host(`${HOMARR_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`) || Host(`${HOMARR_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
-      - "traefik.http.routers.homarr.tls.certresolver=${TRAEFIK_RESOLVER}"
-      - "traefik.http.routers.homarr.tls=true"
-    environment:
-      - SECRET_ENCRYPTION_KEY=${HOMARR_ENCRYPTION_KEY}
-    volumes:
-      - ${HOMARR_CONFIG}:/appdata
-      - ${DOCKER_SOCK}:${DOCKER_SOCK}:ro
-    ports:
-      - ${HOMARR_PORT}:${HOMARR_PORT}
-    networks:
-      - "${TRAEFIK_NETWORK}"
-      - "default"
 
   radarr:
     container_name: radarr
@@ -454,6 +430,10 @@ services:
       - /dev/kmsg:/dev/kmsg
     ports:
       - ${CADVISOR_PORT}:8080
+    command:
+      - '--docker_only=true'   
+      - '--housekeeping_interval=10s'
+      - '--store_container_labels=true'
     restart: ${RESTART_POLICY}
     deploy:
       mode: global
@@ -518,3 +498,23 @@ services:
     networks:
       - "${TRAEFIK_NETWORK}"
       - "default"
+
+#Development stack
+
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TIMEZONE}
+      - PASSWORD=${CODESERVER_PW}
+      - SUDO_PASSWORD=${CODESERVER_PW}
+      - PROXY_DOMAIN=${CODESERVER_SUBDOMAIN}.${TRAEFIK_DOMAIN1}
+      - DEFAULT_WORKSPACE=/config/workspace #optional
+      - PWA_APPNAME=code-server #optional
+    volumes:
+      - ${CODESERVER_CONFIG}:/config
+    ports:
+      - 8443:8443
+    restart: ${RESTART_POLICY}
