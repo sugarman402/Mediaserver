@@ -516,5 +516,5 @@ services:
     volumes:
       - ${CODESERVER_CONFIG}:/config
     ports:
-      - 8443:8443
+      - ${CODESERVER_PORT}:${CODESERVER_PORT}
     restart: ${RESTART_POLICY}
