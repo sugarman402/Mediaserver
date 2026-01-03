@@ -1,0 +1,19 @@
+#!/bin/sh
+#Script to backup Plex Database and Utorrent Server files hourly
+#The backup file will be created in /media/router/backup folder
+DATA_FOLDER="/media/config"
+BACKUP_FOLDER="/media/router/backup"
+LOG_FILE="/opt/backup.log"
+
+cd $BACKUP_FOLDER;
+sudo tar -cvzf backup-plexdb$(date +%Y%m%d)_$(date +%H%M).tar.gz ${DATA_FOLDER}/qbittorrent ${DATA_FOLDER}/tautulli ${DATA_FOLDER}/plex/Library/Application\ Support/Plex\ Media\ Server/Plug-in\ Support/Databases
+echo $(date '+%Y-%m-%d %H:%M:%S') "CREATE - The Hourly backup files has been created in /media/router/backup/" >> ${LOG_FILE};
+
+HMOLDERTHAN24HOURS=$(find $BACKUP_FOLDER -type f -mmin +1440 -name 'backup-plexdb*.gz' -execdir rm -- {} +)
+if  [ $HMOLDERTHAN24HOURS > 0 ];
+then
+find $BACKUP_FOLDER -type f -mmin +1440 -name 'backup-plexdb*.gz' -execdir rm -- {} +;
+echo $(date '+%Y-%m-%d %H:%M:%S') "DELETE - The backup files that older than 24 hours has been deleted from $BACKUP_FOLDER" >> ${LOG_FILE};
+else
+echo $(date '+%Y-%m-%d %H:%M:%S') "DELETE - No backup files that older than 24 hours has been deleted" >> ${LOG_FILE};
+fi
