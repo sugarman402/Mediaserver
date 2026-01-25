@@ -1,45 +1,11 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_RANCHER_MONITORING",
-      "label": "PROMETHEUS_DS",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    }
-  ],
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "7.1.0"
-    },
-    {
-      "type": "panel",
-      "id": "grafana-piechart-panel",
-      "name": "Pie Chart",
-      "version": "1.6.0"
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "uid": "-- Grafana --"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -50,14 +16,13 @@
   },
   "description": "This is a dashboard for Radarr v3 (exportarr does not work with Radarr v2). You will need to install exportarr (https://github.com/onedr0p/exportarr) in order to use this dashboard.\r\n\r\nBased on: https://grafana.com/grafana/dashboards/12530",
   "editable": true,
-  "gnetId": 12896,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 2403631441145856,
   "links": [],
   "panels": [
     {
       "collapsed": false,
-      "datasource": "${DS_RANCHER_MONITORING}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -70,18 +35,19 @@
       "type": "row"
     },
     {
-      "datasource": "${DS_RANCHER_MONITORING}",
-      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "rgb(255, 255, 255)",
-                "value": null
+                "value": 0
               }
             ]
           }
@@ -95,12 +61,12 @@
         "y": 1
       },
       "id": 16,
-      "interval": "",
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "horizontal",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "mean"
@@ -108,11 +74,17 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "7.1.0",
+      "pluginVersion": "12.4.0-21230963995",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
           "expr": "radrr_queue_total OR on() vector(0)",
           "instant": true,
           "interval": "",
@@ -120,32 +92,34 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
           "expr": "radarr_history_total",
-          "hide": false,
           "instant": true,
           "interval": "",
           "legendFormat": "Completed",
           "refId": "B"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Downloads",
       "type": "stat"
     },
     {
-      "datasource": "${DS_RANCHER_MONITORING}",
-      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "rgb(255, 255, 255)",
-                "value": null
+                "value": 0
               }
             ]
           }
@@ -159,12 +133,12 @@
         "y": 1
       },
       "id": 8,
-      "interval": "",
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "horizontal",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "mean"
@@ -172,17 +146,27 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "7.1.0",
+      "pluginVersion": "12.4.0-21230963995",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
           "expr": "radarr_movie_missing_total",
           "interval": "",
           "legendFormat": "Missing",
           "refId": "C"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
           "expr": "radarr_movie_monitored_total",
           "instant": false,
           "interval": "",
@@ -190,20 +174,21 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
           "expr": "radarr_movie_total",
           "interval": "",
           "legendFormat": "Total",
           "refId": "B"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Movies",
       "type": "stat"
     },
     {
       "collapsed": false,
-      "datasource": "${DS_RANCHER_MONITORING}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -216,18 +201,19 @@
       "type": "row"
     },
     {
-      "datasource": "${DS_RANCHER_MONITORING}",
-      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "rgb(255, 255, 255)",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -242,12 +228,12 @@
         "y": 7
       },
       "id": 10,
-      "interval": "",
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "mean"
@@ -255,11 +241,17 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "7.1.0",
+      "pluginVersion": "12.4.0-21230963995",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
           "expr": "radarr_movie_filesize_total",
           "instant": false,
           "interval": "",
@@ -267,28 +259,32 @@
           "refId": "A"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Storage Used",
       "type": "stat"
     },
     {
-      "aliasColors": {},
-      "breakPoint": "50%",
-      "cacheTimeout": null,
-      "combine": {
-        "label": "Others",
-        "threshold": 0
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
-      "datasource": "${DS_RANCHER_MONITORING}",
       "fieldConfig": {
         "defaults": {
-          "custom": {}
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "decimals": 0,
+          "mappings": [],
+          "unit": "short"
         },
         "overrides": []
       },
-      "fontSize": "80%",
-      "format": "short",
       "gridPos": {
         "h": 10,
         "w": 8,
@@ -296,46 +292,62 @@
         "y": 7
       },
       "id": 4,
-      "interval": null,
-      "legend": {
-        "show": true,
-        "sort": "current",
-        "sortDesc": true,
-        "values": true
-      },
-      "legendType": "Right side",
-      "links": [],
       "maxDataPoints": 1,
-      "nullPointMode": "connected",
-      "pieType": "pie",
-      "strokeWidth": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "sort": "desc",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.0-21230963995",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
           "expr": "sort_desc(sum(radarr_movie_quality_total) by (quality))",
           "interval": "",
           "legendFormat": "{{ quality }}",
           "refId": "A"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Episode quality",
-      "type": "grafana-piechart-panel",
-      "valueName": "current"
+      "type": "piechart"
     },
     {
-      "datasource": "${DS_RANCHER_MONITORING}",
-      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "rgb(255, 255, 255)",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -350,12 +362,12 @@
         "y": 12
       },
       "id": 13,
-      "interval": "",
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "horizontal",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "mean"
@@ -363,11 +375,17 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "7.1.0",
+      "pluginVersion": "12.4.0-21230963995",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
           "expr": "radarr_rootfolder_freespace_bytes",
           "instant": false,
           "interval": "",
@@ -375,15 +393,13 @@
           "refId": "A"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Storage Available",
       "type": "stat"
     }
   ],
+  "preload": false,
   "refresh": "5s",
-  "schemaVersion": 26,
-  "style": "dark",
+  "schemaVersion": 42,
   "tags": [],
   "templating": {
     "list": []
@@ -405,8 +421,9 @@
       "1d"
     ]
   },
-  "timezone": "",
+  "timezone": "browser",
   "title": "Radarr v3",
   "uid": "F2vfZUNGz",
-  "version": 3
+  "version": 1,
+  "weekStart": ""
 }
