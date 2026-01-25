@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-COMPOSE_FILE="../docker-compose.yaml"
+# Get the directory where this script is located, then go up one level
+DIR="$(cd "$(dirname "$0")/.." && pwd)"
+COMPOSE_FILE="$DIR/docker-compose.yaml"
 
 # Check dependencies
 for cmd in yq jq curl; do
