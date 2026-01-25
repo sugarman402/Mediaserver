@@ -1,0 +1,35 @@
+# Ignore everything by default
+*
+
+# Track gitignore itself
+!.gitignore
+
+# Track docker-compose.yaml
+!docker-compose.yaml
+
+# Track README and default.env (template without secrets)
+!README.md
+!default.env
+
+# Track scripts directory
+!scripts/
+!scripts/*
+
+# Track alertmanager config
+!alertmanager/
+alertmanager/*
+!alertmanager/config.yml
+
+# Track grafana provisioning
+!grafana/
+grafana/*
+!grafana/provisioning/
+!grafana/provisioning/*/
+!grafana/provisioning/**/*
+
+# Track prometheus config
+!prometheus/
+prometheus/*
+!prometheus/etc/
+prometheus/etc/*
+!prometheus/etc/prometheus.yml
