@@ -13,11 +13,10 @@ cd ${DATA_FOLDER};
 docker compose up -d
 echo $(date '+%Y-%m-%d %H:%M:%S') "CREATE - The Daily backup files has been created in ${BACKUP_FOLDER}" >> ${LOG_FILE};
 
-HMOLDERTHAN4WEEKS=$(find $BACKUP_FOLDER -type f -mtime 28 -name '*.gz' | wc -l)
-if  [ $HMOLDERTHAN4WEEKS > 1 ];
-then
-find $BACKUP_FOLDER -type f -mtime 28 -name '*.gz' -execdir rm -- {} +;
-echo $(date '+%Y-%m-%d %H:%M:%S') "DELETE - The backup files that older than 28 days has been deleted from $BACKUP_FOLDER" >> ${LOG_FILE};
+HMOLDERTHAN4WEEKS=$(find $BACKUP_FOLDER -type f -mtime +28 -name '*.gz' | wc -l)
+if [ $HMOLDERTHAN4WEEKS -gt 0 ]; then
+find $BACKUP_FOLDER -type f -mtime +28 -name '*.gz' -execdir rm -- {} +;
+echo $(date '+%Y-%m-%d %H:%M:%S') "DELETE - The backup files older than 28 days has been deleted from $BACKUP_FOLDER" >> ${LOG_FILE};
 else
-echo $(date '+%Y-%m-%d %H:%M:%S') "DELETE - No backup files that older than 28 days has been deleted" >> ${LOG_FILE};
+echo $(date '+%Y-%m-%d %H:%M:%S') "DELETE - No backup files older than 28 days to delete" >> ${LOG_FILE};
 fi
