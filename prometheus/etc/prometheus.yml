@@ -48,4 +48,10 @@ scrape_configs:
         labels:
           app: 'qbittorrent-exporter'
           host: 'mediaserver'
-
+  - job_name: 'router-openwrt'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['192.168.100.1:9100']
+        labels:
+          app: 'openwrt-exporter'
+          host: 'router'
