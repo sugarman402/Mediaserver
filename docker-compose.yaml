@@ -403,7 +403,7 @@ services:
       mode: global
   grafana:
     container_name: grafana
-    image: grafana/grafana:12.4.0-21230963995
+    image: grafana/grafana:12.4.0-21342258703
     user: "472"
     ports:
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
