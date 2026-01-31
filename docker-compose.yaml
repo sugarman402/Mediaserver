@@ -55,39 +55,16 @@ services:
       - "${TRAEFIK_LETSENCRYPT}:/letsencrypt"
       - "${TRAEFIK_FOLDER}:${TRAEFIK_LOGS_FOLDER}"
       # Using host network mode for direct port binding
-  #   samba:
-  #     image: dperson/samba
-  #     container_name: "samba"
-  #     environment:
-  #       TZ: ${TIMEZONE}
-  #     networks:
-  #       - default
-  #     ports:
-  #       - "137:137/udp"
-  #       - "138:138/udp"
-  #       - "139:139/tcp"
-  #       - "445:445/tcp"
-  #     read_only: true
-  #     tmpfs:
-  #       - /tmp
-  #     restart: ${RESTART_POLICY}
-  #     stdin_open: true
-  #     tty: true
-  #     volumes:
-  #       - ${SAMBA_VOLUME}:/mnt
-  # #      - ${SAMBA_CONFIG:/etc/samba/smb.conf}
-  #     command: '${SAMBA_COMMAND}'
 
   # Media stack
   plex:
     image: linuxserver/plex:1.43.0
     container_name: plex
-    network_mode: "host" # Required for optimal Plex performance and discovery
+    network_mode: "host" #Workaround because of the introduction of Plex's stream pass
     environment:
       - PUID=1000
       - PGID=1000
       - VERSION=docker
-      - PLEX_CLAIM=${PLEX_CLAIM}
       - ADVERTISE_IP=http://${DOCKER_HOST_IP}:${PLEX_PORT1}/
     volumes:
       - ${PLEX_CONFIG}:/config
@@ -97,14 +74,6 @@ services:
     ports:
       - ${PLEX_PORT1}:${PLEX_PORT1}/tcp
       - ${PLEX_PORT1}:${PLEX_PORT1}/udp
-      - 3005:3005/tcp
-      - 8324:8324/tcp
-      - 32469:32469/tcp
-      - 1900:1900/udp
-      - 32410:32410/udp
-      - 32412:32412/udp
-      - 32413:32413/udp
-      - 32414:32414/udp
     # Port mappings are ignored in host network mode but kept for documentation
     labels:
       - "needs.stop.for.backup=true"
@@ -134,6 +103,9 @@ services:
     restart: ${RESTART_POLICY}
     depends_on:
       - plex
+    environment:
+      #As plex is using host networking, we need to point plextraktsync to the correct IP
+      - PLEX_LOCALURL=http://${DOCKER_HOST_IP}:${PLEX_PORT1}
     volumes:
       - ${TRAKT_SYNC_CONFIG}:/app/config
     networks:

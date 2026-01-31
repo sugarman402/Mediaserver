@@ -99,3 +99,19 @@ Upgrades services to latest stable versions automatically.
 cp docker-compose.yaml.bak.TIMESTAMP docker-compose.yaml
 docker compose pull && docker compose up -d
 ```
+
+### Discord Notifications
+
+The upgrade-compose-stack.sh script will automatically send a notification to your configured Discord webhook about the result of each upgrade (success or failure, with details on any failed containers). Set the `DISCORD_WEBHOOK_URL` variable in your `.env` file to enable this feature.
+
+## Manual Configuration for Service Data Files
+
+Some services require manual creation or editing of configuration files in addition to .env variables. Below are the main components and the files you may need to create or edit:
+
+| Service         | Config Path                                              | Description/Action Required                |
+|-----------------|----------------------------------------------------------|--------------------------------------------|
+| Alertmanager    | alertmanager/config.yml                                  | Define routing, receivers, and rules       |
+| Grafana         | grafana/config.monitoring                                | username, password for GUI access          |
+| PlexTraktSync   | plextraktsync/config.yml, plextraktsync/servers.yml      | Plex/Trakt tokens, server URLs             |
+
+> For each service above, copy a sample config from the official documentation or your previous setup, and adjust as needed. Some services will auto-generate these files on first run, but you may want to pre-populate them for easier migration or backup.

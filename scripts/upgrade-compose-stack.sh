@@ -5,6 +5,13 @@ set -euo pipefail
 DIR="$(cd "$(dirname "$0")/.." && pwd)"
 COMPOSE_FILE="$DIR/docker-compose.yaml"
 
+# Load .env file for DISCORD_WEBHOOK_URL and other variables
+if [ -f "$DIR/.env" ]; then
+  set -a
+  . "$DIR/.env"
+  set +a
+fi
+
 # Check dependencies
 for cmd in yq jq curl; do
   command -v "$cmd" >/dev/null || { echo "❌ $cmd not found"; exit 1; }
@@ -125,6 +132,66 @@ done
 
 echo "🎉 Upgrade complete"
 docker compose pull && docker compose up -d
+
+# --- Health check for upgraded containers ---
+echo "⏳ Waiting 30 seconds to check container health..."
+# Get container names from compose file
+mapfile -t containers < <(docker compose ps --format '{{.Name}}')
+declare -A initial_restarts
+for c in "${containers[@]}"; do
+  initial_restarts[$c]=$(docker inspect --format='{{.RestartCount}}' "$c" 2>/dev/null || echo 0)
+done
+sleep 30
+echo "🔍 Checking container status and restarts..."
+all_ok=true
+for c in "${containers[@]}"; do
+  status=$(docker inspect --format='{{.State.Status}}' "$c" 2>/dev/null)
+  restarts=$(docker inspect --format='{{.RestartCount}}' "$c" 2>/dev/null || echo 0)
+  if [[ "$status" != "running" ]]; then
+    echo "❌ $c is not running (status: $status)"
+    all_ok=false
+  elif (( restarts > initial_restarts[$c] )); then
+    echo "❌ $c restarted during health check (restarts: $restarts)"
+    all_ok=false
+  else
+    echo "✅ $c is running and stable (restarts: $restarts)"
+  fi
+done
+if [ "$all_ok" = true ]; then
+  echo "🎉 All upgraded containers are running and stable after 30 seconds."
+  # Send Discord webhook notification
+  if [[ -n "${DISCORD_WEBHOOK_URL:-}" ]]; then
+    msg="✅ *Upgrade successful!* All upgraded containers are running and stable after 30 seconds."
+    payload=$(jq -nc --arg content "$msg" '{content: $content}')
+    curl -fsSL -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK_URL" || true
+  else
+    echo "No DISCORD_WEBHOOK_URL set, skipping Discord notification."
+  fi
+else
+  echo "⚠️  Some containers failed health check. See above for details."
+  # Identify failed containers
+  failed_containers=()
+  for c in "${containers[@]}"; do
+    status=$(docker inspect --format='{{.State.Status}}' "$c" 2>/dev/null)
+    restarts=$(docker inspect --format='{{.RestartCount}}' "$c" 2>/dev/null || echo 0)
+    if [[ "$status" != "running" ]] || (( restarts > initial_restarts[$c] )); then
+      failed_containers+=("$c (status: $status, restarts: $restarts)")
+    fi
+  done
+  # Restore backup
+  echo "🔄 Reverting to previous docker-compose.yaml..."
+  cp "${COMPOSE_FILE}.bak."* "${COMPOSE_FILE}"
+  docker compose pull && docker compose up -d
+  # Send Discord webhook notification
+  if [[ -n "${DISCORD_WEBHOOK_URL:-}" ]]; then
+    msg="⚠️ *Upgrade failed!* The following containers failed health check and the stack was reverted: ${failed_containers[*]}"
+    payload=$(jq -nc --arg content "$msg" '{content: $content}')
+    curl -fsSL -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK_URL" || true
+  else
+    echo "No DISCORD_WEBHOOK_URL set, skipping Discord notification."
+  fi
+  exit 2
+fi
 
 echo "🧹 Removing unused images..."
 docker image prune -af
