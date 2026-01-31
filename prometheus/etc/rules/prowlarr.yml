@@ -1,0 +1,11 @@
+groups:
+- name: prowlarr
+  rules:
+  - alert: ProwlarrLowEnabledIndexersRatio
+    expr: (prowlarr_indexer_enabled_total / prowlarr_indexer_total) * 100 < 100
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: 'Prowlarr has low enabled indexers ratio ({{ $value | humanize }}%)'
+      description: 'Only {{ $value | humanize }}% of indexers enabled; check config on {{ $labels.instance }}.'

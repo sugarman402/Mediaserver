@@ -1,0 +1,38 @@
+# groups:
+# - name: missing_media_mounts
+#   rules:
+#   - alert: MissingMediaMountFilmek
+#     expr: absent(node_filesystem_avail_bytes{mountpoint="/media/filmek"})
+#     for: 5m
+#     labels:
+#       severity: critical
+#     annotations:
+#       summary: 'Missing /media/filmek mount'
+#       description: '/media/filmek not mounted/detected on {{ $labels.instance }}.[web:7][web:8]'
+
+#   - alert: MissingMediaMountSorozatok
+#     expr: absent(node_filesystem_avail_bytes{mountpoint="/media/sorozatok"})
+#     for: 5m
+#     labels:
+#       severity: critical
+#     annotations:
+#       summary: 'Missing /media/sorozatok mount'
+#       description: '/media/sorozatok not mounted/detected on {{ $labels.instance }}.[web:7][web:8]'
+
+#   - alert: MissingMediaMountRouter
+#     expr: absent(node_filesystem_avail_bytes{mountpoint="/media/router"})
+#     for: 5m
+#     labels:
+#       severity: critical
+#     annotations:
+#       summary: 'Missing /media/router mount'
+#       description: '/media/router not mounted/detected on {{ $labels.instance }}.[web:7][web:8]'
+
+#   - alert: MissingMediaMountStorage
+#     expr: absent(node_filesystem_avail_bytes{mountpoint="/media/storage"})
+#     for: 5m
+#     labels:
+#       severity: critical
+#     annotations:
+#       summary: 'Missing /media/storage mount'
+#       description: '/media/storage not mounted/detected on {{ $labels.instance }}.[web:7][web:8]'

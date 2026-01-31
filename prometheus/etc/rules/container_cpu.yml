@@ -1,0 +1,11 @@
+groups:
+- name: container_cpu
+  rules:
+  - alert: ContainerHighCPU
+    expr: 100 * rate(container_cpu_usage_seconds_total{name!=""}[5m]) / on(instance) group_left() count(rate(container_cpu_usage_seconds_total{name!=""}[5m])) by (instance) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: 'High CPU on container {{ $labels.name }} ({{ $value | humanize }}%)'
+      description: 'Container {{ $labels.name }} on {{ $labels.instance }} CPU >80% for >5m.'

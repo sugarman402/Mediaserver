@@ -1,0 +1,11 @@
+groups:
+- name: traefik_errors
+  rules:
+  - alert: TraefikHigh5xx
+    expr: rate(traefik_entrypoint_requests_total{code=~"5\\d\\d"}[5m]) / rate(traefik_entrypoint_requests_total[5m]) * 100 > 5
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: 'Traefik high 5xx on entrypoint {{ $labels.entrypoint }} ({{ $value | humanize }}%)'
+      description: '{{ $labels.entrypoint }} has high 5xx error rate on {{ $labels.instance }}.'
