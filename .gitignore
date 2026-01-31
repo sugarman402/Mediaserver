@@ -33,3 +33,7 @@ prometheus/*
 !prometheus/etc/
 prometheus/etc/*
 !prometheus/etc/prometheus.yml
+
+# Ensure prometheus rules directory and all files are tracked
+!prometheus/etc/rules/
+!prometheus/etc/rules/**
