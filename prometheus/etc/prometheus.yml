@@ -27,6 +27,13 @@ scrape_configs:
         labels:
           app: 'radarr-exporter'
           host: 'mediaserver'
+  - job_name: 'prowlarr-exporter'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['prowlarr-exporter:9709']
+        labels:
+          app: 'prowlarr-exporter'
+          host: 'mediaserver'
   - job_name: 'traefik'
     scrape_interval: 30s
     static_configs:

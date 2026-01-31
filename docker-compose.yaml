@@ -414,6 +414,19 @@ services:
     restart: ${RESTART_POLICY}
     depends_on:
       - radarr
+  prowlarr-exporter:
+    container_name: prowlarr-exporter
+    image: ghcr.io/onedr0p/exportarr:v2.3.0
+    command: ["prowlarr"]
+    environment:
+      PORT: ${PROWLARR_METRICS}
+      URL: "http://prowlarr:${PROWLARR_PORT}"
+      APIKEY: "${PROWLARR_API}"
+    ports:
+      - "${PROWLARR_METRICS}:${PROWLARR_METRICS}"
+    restart: ${RESTART_POLICY}
+    depends_on:
+      - prowlarr
   qbittorrent-exporter:
     container_name: qbittorrent-exporter
     image: ghcr.io/martabal/qbittorrent-exporter:v1.12.1
