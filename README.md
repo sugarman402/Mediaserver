@@ -51,11 +51,13 @@ Or manually:
 ```bash
 sudo cp scripts/dailyBackupCronjob /etc/cron.daily/
 sudo cp scripts/hourlyBackupCronjob /etc/cron.hourly/
-sudo chmod +x /etc/cron.daily/dailyBackupCronjob /etc/cron.hourly/hourlyBackupCronjob
+sudo cp scripts/upgradeComposeStack /etc/cron.weekly/
+sudo chmod +x /etc/cron.daily/dailyBackupCronjob /etc/cron.hourly/hourlyBackupCronjob /etc/cron.weekly/upgradeComposeStack
 ```
 
 - **dailyBackupCronjob** - Full `/media/config` backup, 28-day retention
 - **hourlyBackupCronjob** - qBittorrent, Tautulli, Plex DBs, 24-hour retention
+- **upgradeComposeStack** - upgrade Docker Compose stack and sends status report
 
 Logs: `/opt/backup.log`
 
@@ -75,7 +77,7 @@ QB_PW="mypassword"     # Becomes QB_PW=CHANGE_ME
 
 Run: `./scripts/cleanup-env-file.sh`
 
-### upgrade-compose-stack.sh
+### upgradeComposeStack
 
 Upgrades services to latest stable versions automatically.
 
@@ -87,11 +89,7 @@ Upgrades services to latest stable versions automatically.
 - Filters out pre-release/platform-specific tags
 - Skips `latest` tags and prevents downgrades
 - Pulls new images and recreates containers
-
-**Output:**
-- ✅ Service upgraded
-- ℹ️ Up-to-date or using `latest` (skipped)
-- ⚠️ Unable to fetch tags
+- Sends status report to Discord channel
 
 **Recovery:**
 
@@ -102,7 +100,7 @@ docker compose pull && docker compose up -d
 
 ### Discord Notifications
 
-The upgrade-compose-stack.sh script will automatically send a notification to your configured Discord webhook about the result of each upgrade (success or failure, with details on any failed containers). Set the `DISCORD_WEBHOOK_URL` variable in your `.env` file to enable this feature.
+The upgradeComposeStack script will automatically send a notification to your configured Discord webhook about the result of each upgrade (success or failure, with details on any failed containers). Set the `DISCORD_WEBHOOK_URL` variable in your `.env` file to enable this feature.
 
 ## Manual Configuration for Service Data Files
 

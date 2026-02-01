@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Get the directory where this script is located, then go up one level
-DIR="$(cd "$(dirname "$0")/.." && pwd)"
+DIR="/media/config"
 COMPOSE_FILE="$DIR/docker-compose.yaml"
 
-# Load .env file for DISCORD_WEBHOOK_URL and other variables
+# Load .env file for variables
 if [ -f "$DIR/.env" ]; then
   set -a
   . "$DIR/.env"
@@ -20,8 +19,12 @@ yq --version | grep -q 'version v4' || { echo "❌ yq v4 required"; exit 1; }
 
 # Backup and start
 cp "$COMPOSE_FILE" "${COMPOSE_FILE}.bak.$(date +%s)"
+
 echo "📦 Backup created"
+echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - Backup file created" >> ${LOG_FILE};
+
 echo "🔍 Processing services..."
+echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - Processing services..." >> ${LOG_FILE};
 
 # Exclusion patterns for filtering tags
 EXCLUDE_PATTERN='(alpha|beta|rc[0-9]?|dev|nightly|edge|test|preview|canary|experimental|windows|nanoserver|servercore|ltsc|amd64|arm64|arm32|armv[67]|ppc64le|s390x|i386|386|riscv64|alpine|ubuntu|debian|bullseye|bookworm|buster|jammy|focal|bionic|react[0-9]+|no-new-use-public-image)'
@@ -131,10 +134,12 @@ for service in $(yq -r '.services | keys[]' "$COMPOSE_FILE"); do
 done
 
 echo "🎉 Upgrade complete"
+echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - Upgrade complete" >> ${LOG_FILE};
 docker compose pull && docker compose up -d
 
 # --- Health check for upgraded containers ---
 echo "⏳ Waiting 30 seconds to check container health..."
+echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - Waiting 30 seconds to check container health..." >> ${LOG_FILE};
 # Get container names from compose file
 mapfile -t containers < <(docker compose ps --format '{{.Name}}')
 declare -A initial_restarts
@@ -143,6 +148,7 @@ for c in "${containers[@]}"; do
 done
 sleep 30
 echo "🔍 Checking container status and restarts..."
+echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - Checking container status and restarts..." >> ${LOG_FILE};
 all_ok=true
 for c in "${containers[@]}"; do
   status=$(docker inspect --format='{{.State.Status}}' "$c" 2>/dev/null)
@@ -159,6 +165,7 @@ for c in "${containers[@]}"; do
 done
 if [ "$all_ok" = true ]; then
   echo "🎉 All upgraded containers are running and stable after 30 seconds."
+  echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - All containers are stable after 30 seconds" >> ${LOG_FILE};
   # Send Discord webhook notification
   if [[ -n "${DISCORD_WEBHOOK_URL:-}" ]]; then
     msg="✅ *Upgrade successful!* All upgraded containers are running and stable after 30 seconds."
@@ -166,9 +173,11 @@ if [ "$all_ok" = true ]; then
     curl -fsSL -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK_URL" || true
   else
     echo "No DISCORD_WEBHOOK_URL set, skipping Discord notification."
+    echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - No DISCORD_WEBHOOK_URL set, skipping Discord notification" >> ${LOG_FILE};
   fi
 else
   echo "⚠️  Some containers failed health check. See above for details."
+  echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - Some containers failed health check, reverting to backup" >> ${LOG_FILE};
   # Identify failed containers
   failed_containers=()
   for c in "${containers[@]}"; do
@@ -180,6 +189,7 @@ else
   done
   # Restore backup
   echo "🔄 Reverting to previous docker-compose.yaml..."
+  echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - Reverting to previous docker-compose.yaml" >> ${LOG_FILE};
   cp "${COMPOSE_FILE}.bak."* "${COMPOSE_FILE}"
   docker compose pull && docker compose up -d
   # Send Discord webhook notification
@@ -189,9 +199,11 @@ else
     curl -fsSL -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK_URL" || true
   else
     echo "No DISCORD_WEBHOOK_URL set, skipping Discord notification."
+    echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - No DISCORD_WEBHOOK_URL set, skipping Discord notification" >> ${LOG_FILE};
   fi
   exit 2
 fi
 
 echo "🧹 Removing unused images..."
+echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - Removing unused images" >> ${LOG_FILE};
 docker image prune -af

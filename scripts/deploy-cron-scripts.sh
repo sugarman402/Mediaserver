@@ -26,4 +26,5 @@ deploy() {
 echo "Deploying cron scripts from $DIR..."
 deploy "$DIR/dailyBackupCronjob" "/etc/cron.daily/dailyBackupCronjob"
 deploy "$DIR/hourlyBackupCronjob" "/etc/cron.hourly/hourlyBackupCronjob"
+deploy "$DIR/upgradeComposeStack" "/etc/cron.weekly/upgradeComposeStack"
 echo "Done!"
