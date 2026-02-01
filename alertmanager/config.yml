@@ -5,5 +5,5 @@
   group_wait: 10s
   group_interval: 5m
   receiver: default-receiver
-  repeat_interval: 3h
+  repeat_interval: 4h
 

@@ -2,8 +2,8 @@ groups:
 - name: docker_restarts
   rules:
   - alert: DockerContainerHighRestarts
-    expr: count by (instance, name) (count_over_time(container_last_seen{name!="", container_label_restartcount!=""}[60m])) > 0
-    for: 10m
+    expr: count by (instance, name) (count_over_time(container_last_seen{name!="", container_label_restartcount!=""}[30m])) > 0
+    for: 5m
     labels:
       severity: critical
     annotations:
