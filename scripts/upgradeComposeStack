@@ -61,7 +61,7 @@ fetch_tags() {
       local token=$(curl -fsSL "https://ghcr.io/token?scope=repository:${image}:pull" 2>/dev/null | jq -r '.token // empty')
       local auth_header=""
       [[ -n "$token" ]] && auth_header="Authorization: Bearer $token"
-      curl -fsSL ${auth_header:+-H "$auth_header"} "https://ghcr.io/v2/${image}/tags/list" 2>/dev/null | jq -r '.tags[]?'
+      curl -fsSL ${auth_header:+-H "$auth_header"} "https://ghcr.io/v2/${image}/tags/list?n=1000" 2>/dev/null | jq -r '.tags[]?'
       ;;
     gcr.io)
       local image="${repo#gcr.io/}"

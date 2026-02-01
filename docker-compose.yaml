@@ -55,7 +55,6 @@ services:
       - "${TRAEFIK_LETSENCRYPT}:/letsencrypt"
       - "${TRAEFIK_FOLDER}:${TRAEFIK_LOGS_FOLDER}"
       # Using host network mode for direct port binding
-
   # Media stack
   plex:
     image: linuxserver/plex:1.43.0
@@ -97,7 +96,7 @@ services:
       ofelia.job-exec.plextraktsync.container: "plextraktsync"
       ofelia.job-exec.plextraktsync.command: "plextraktsync sync"
   plextraktsync:
-    image: ghcr.io/taxel/plextraktsync:0.21.2
+    image: ghcr.io/taxel/plextraktsync:0.34.20
     container_name: plextraktsync
     command: watch
     restart: ${RESTART_POLICY}
@@ -430,7 +429,7 @@ services:
       - prowlarr
   qbittorrent-exporter:
     container_name: qbittorrent-exporter
-    image: ghcr.io/martabal/qbittorrent-exporter:v1.12.1
+    image: ghcr.io/martabal/qbittorrent-exporter:v1.13.2
     environment:
       QBITTORRENT_BASE_URL: http://qbittorrent:${QB_PORT}
       QBITTORRENT_USERNAME: ${QB_USER}
