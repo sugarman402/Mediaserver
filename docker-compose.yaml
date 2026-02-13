@@ -132,28 +132,6 @@ services:
       - "traefik.http.routers.tautulli.rule=Host(`${TAUTULLI_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`) || Host(`${TAUTULLI_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
       - "traefik.http.routers.tautulli.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.tautulli.tls=true"
-  kitana:
-    image: pannal/kitana:0.4.3-2
-    container_name: kitana
-    command: -B 0.0.0.0:${KITANA_PORT} -p /kitana -P
-    environment:
-      - PUID=1000
-      - PGID=1000
-    volumes:
-      - ${KITANA_CONFIG}:/app/data
-    restart: ${RESTART_POLICY}
-    ports:
-      - ${KITANA_PORT}:${KITANA_PORT}
-    networks:
-      - "${TRAEFIK_NETWORK}"
-      - "default"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.kitana.entrypoints=${TRAEFIK_ENTRYPOINTS}"
-      - "traefik.http.services.kitana.loadbalancer.server.port=${KITANA_PORT}"
-      - "traefik.http.routers.kitana.rule=Host(`${KITANA_SUBDOMAIN}.${TRAEFIK_DOMAIN1}`) || Host(`${KITANA_SUBDOMAIN}.${TRAEFIK_DOMAIN2}`)"
-      - "traefik.http.routers.kitana.tls.certresolver=${TRAEFIK_RESOLVER}"
-      - "traefik.http.routers.kitana.tls=true"
       # Arr stack
   radarr:
     container_name: radarr
