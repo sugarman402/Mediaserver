@@ -135,7 +135,7 @@ done
 
 echo "🎉 Upgrade complete"
 echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - Upgrade complete" >> ${LOG_FILE};
-docker compose pull && docker compose up -d
+docker compose up -d
 
 # --- Health check for upgraded containers ---
 echo "⏳ Waiting 30 seconds to check container health..."
@@ -191,7 +191,7 @@ else
   echo "🔄 Reverting to previous docker-compose.yaml..."
   echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - Reverting to previous docker-compose.yaml" >> ${LOG_FILE};
   cp "${COMPOSE_FILE}.bak."* "${COMPOSE_FILE}"
-  docker compose pull && docker compose up -d
+  docker compose up -d
   # Send Discord webhook notification
   if [[ -n "${DISCORD_WEBHOOK_URL:-}" ]]; then
     msg="⚠️ *Upgrade failed!* The following containers failed health check and the stack was reverted: ${failed_containers[*]}"

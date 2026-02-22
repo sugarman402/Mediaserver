@@ -111,7 +111,7 @@ services:
       - "${TRAEFIK_NETWORK}"
       - "default"
   tautulli:
-    image: tautulli/tautulli:v2.16.0
+    image: tautulli/tautulli:v2.16.1
     container_name: tautulli
     environment:
       - PUID=1000
@@ -224,7 +224,7 @@ services:
       - "${TRAEFIK_NETWORK}"
       - "default"
   overseerr:
-    image: linuxserver/overseerr:1.34.0
+    image: linuxserver/overseerr:1.35.0
     container_name: overseerr
     environment:
       - PUID=1000
@@ -353,7 +353,7 @@ services:
       mode: global
   grafana:
     container_name: grafana
-    image: grafana/grafana:12.4.0-21928610896
+    image: grafana/grafana:12.4.0-22081664032
     user: "472"
     ports:
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
@@ -407,7 +407,7 @@ services:
       - prowlarr
   qbittorrent-exporter:
     container_name: qbittorrent-exporter
-    image: ghcr.io/martabal/qbittorrent-exporter:v1.13.2
+    image: ghcr.io/martabal/qbittorrent-exporter:v1.13.3
     environment:
       QBITTORRENT_BASE_URL: http://qbittorrent:${QB_PORT}
       QBITTORRENT_USERNAME: ${QB_USER}
