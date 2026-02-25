@@ -5,7 +5,7 @@ networks:
 services:
   #Administration & Management stack
   portainer:
-    image: portainer/portainer-ce:2.38.1
+    image: portainer/portainer-ce:2.39.0
     container_name: portainer
     restart: ${RESTART_POLICY}
     volumes:
@@ -15,7 +15,7 @@ services:
     ports:
       - ${PORTAINER_PORT}:${PORTAINER_PORT}
   traefik:
-    image: library/traefik:v3.6.8
+    image: library/traefik:v3.6.9
     restart: ${RESTART_POLICY}
     container_name: "traefik"
     network_mode: "host" # Required for binding to host ports 80/443
@@ -284,7 +284,7 @@ services:
       #Monitoring stack
   prometheus:
     container_name: prometheus
-    image: prom/prometheus:v3.9.1
+    image: prom/prometheus:v3.10.0
     volumes:
       - ${PROM_CONFIG}/etc/:/etc/prometheus/
       - ${PROM_CONFIG}:/prometheus
@@ -353,7 +353,7 @@ services:
       mode: global
   grafana:
     container_name: grafana
-    image: grafana/grafana:12.4.0-22081664032
+    image: grafana/grafana:13.0.0-22288738230
     user: "472"
     ports:
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
