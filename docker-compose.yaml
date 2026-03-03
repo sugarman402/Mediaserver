@@ -83,7 +83,7 @@ services:
       - "traefik.http.routers.plex.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.plex.tls=true"
   scheduler:
-    image: mcuadros/ofelia:0.3.20
+    image: mcuadros/ofelia:0.3.21
     container_name: scheduler
     restart: ${RESTART_POLICY}
     depends_on:
@@ -96,7 +96,7 @@ services:
       ofelia.job-exec.plextraktsync.container: "plextraktsync"
       ofelia.job-exec.plextraktsync.command: "plextraktsync sync"
   plextraktsync:
-    image: ghcr.io/taxel/plextraktsync:0.35.0
+    image: ghcr.io/taxel/plextraktsync:0.35.1
     container_name: plextraktsync
     command: watch
     restart: ${RESTART_POLICY}
@@ -199,7 +199,7 @@ services:
       - "${TRAEFIK_NETWORK}"
       - "default"
   bazarr:
-    image: linuxserver/bazarr:1.5.5
+    image: linuxserver/bazarr:1.5.6
     container_name: bazarr
     environment:
       - PUID=1000
@@ -423,7 +423,7 @@ services:
       - "default"
       #Testing stack
   code-server:
-    image: linuxserver/code-server:4.109.2
+    image: linuxserver/code-server:4.109.5
     container_name: code-server
     environment:
       - PUID=1000
