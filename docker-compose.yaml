@@ -5,7 +5,7 @@ networks:
 services:
   #Administration & Management stack
   portainer:
-    image: portainer/portainer-ce:2.39.0
+    image: portainer/portainer-ce:2.39.1
     container_name: portainer
     restart: ${RESTART_POLICY}
     volumes:
@@ -15,7 +15,7 @@ services:
     ports:
       - ${PORTAINER_PORT}:${PORTAINER_PORT}
   traefik:
-    image: library/traefik:v3.6.10
+    image: library/traefik:v3.6.11
     restart: ${RESTART_POLICY}
     container_name: "traefik"
     network_mode: "host" # Required for binding to host ports 80/443
@@ -57,7 +57,7 @@ services:
       # Using host network mode for direct port binding
   # Media stack
   plex:
-    image: linuxserver/plex:1.43.0
+    image: linuxserver/plex:1.43.0.10492-121068a07-ls297
     container_name: plex
     network_mode: "host" #Workaround because of the introduction of Plex's stream pass
     environment:
@@ -65,10 +65,13 @@ services:
       - PGID=1000
       - VERSION=docker
       - ADVERTISE_IP=http://${DOCKER_HOST_IP}:${PLEX_PORT1}/
+      - PLEX_SUPPORTED_HWACCEL=vaapi
     volumes:
       - ${PLEX_CONFIG}:/config
       - ${SERIES_FOLDER}:/${SERIES_FOLDER}
       - ${MOVIES_FOLDER}:/${MOVIES_FOLDER}
+    devices:
+      - /dev/dri:/dev/dri
     restart: ${RESTART_POLICY}
     ports:
       - ${PLEX_PORT1}:${PLEX_PORT1}/tcp
@@ -169,7 +172,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=${TIMEZONE}
-    image: linuxserver/sonarr:4.0.16
+    image: linuxserver/sonarr:4.0.17
     networks:
       - "${TRAEFIK_NETWORK}"
       - "default"
@@ -353,7 +356,7 @@ services:
       mode: global
   grafana:
     container_name: grafana
-    image: grafana/grafana:13.0.0-22696220628
+    image: grafana/grafana:13.0.0-23336907879
     user: "472"
     ports:
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
@@ -423,7 +426,7 @@ services:
       - "default"
       #Testing stack
   code-server:
-    image: linuxserver/code-server:4.109.5
+    image: linuxserver/code-server:4.112.0
     container_name: code-server
     environment:
       - PUID=1000
