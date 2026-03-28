@@ -57,7 +57,7 @@ services:
       # Using host network mode for direct port binding
   # Media stack
   plex:
-    image: linuxserver/plex:1.43.0
+    image: linuxserver/plex:amd64-1.40.4
     container_name: plex
     network_mode: "host" #Workaround because of the introduction of Plex's stream pass
     environment:
@@ -331,6 +331,14 @@ services:
     command:
       - '--config.file=/etc/alertmanager/config.yml'
       - '--storage.path=/alertmanager'
+  smartctl-exporter:
+    container_name: smartctl-exporter
+    image: prometheuscommunity/smartctl-exporter:v0.14.0
+    privileged: true
+    user: root
+    ports:
+      - ${SMARTCTL_EXPORTER_PORT}:${SMARTCTL_EXPORTER_PORT}
+    restart: ${RESTART_POLICY}
   cadvisor:
     container_name: cadvisor
     image: gcr.io/cadvisor/cadvisor:v0.55.1

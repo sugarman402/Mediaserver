@@ -9,6 +9,13 @@ scrape_configs:
         labels:
           app: 'node-exporter'
           host: 'mediaserver'
+  - job_name: 'smartctl-exporter'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['smartctl-exporter:9633']
+        labels:
+          app: 'smartctl-exporter'
+          host: 'mediaserver'
   - job_name: 'cadvisor'
     scrape_interval: 30s
     static_configs:
