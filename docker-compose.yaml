@@ -57,7 +57,7 @@ services:
       # Using host network mode for direct port binding
   # Media stack
   plex:
-    image: linuxserver/plex:amd64-1.40.4
+    image: linuxserver/plex:1.43.0
     container_name: plex
     network_mode: "host" #Workaround because of the introduction of Plex's stream pass
     environment:
@@ -111,7 +111,7 @@ services:
       - "${TRAEFIK_NETWORK}"
       - "default"
   tautulli:
-    image: tautulli/tautulli:v2.16.1
+    image: tautulli/tautulli:v2.17.0
     container_name: tautulli
     environment:
       - PUID=1000
@@ -361,7 +361,7 @@ services:
       mode: global
   grafana:
     container_name: grafana
-    image: grafana/grafana:13.0.0-23466975118
+    image: grafana/grafana:13.0.0-23649747481
     user: "472"
     ports:
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
@@ -415,7 +415,7 @@ services:
       - prowlarr
   qbittorrent-exporter:
     container_name: qbittorrent-exporter
-    image: ghcr.io/martabal/qbittorrent-exporter:v1.13.3
+    image: ghcr.io/martabal/qbittorrent-exporter:v1.13.4
     environment:
       QBITTORRENT_BASE_URL: http://qbittorrent:${QB_PORT}
       QBITTORRENT_USERNAME: ${QB_USER}

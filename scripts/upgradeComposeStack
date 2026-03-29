@@ -191,6 +191,7 @@ else
   echo "🔄 Reverting to previous docker-compose.yaml..."
   echo $(date '+%Y-%m-%d %H:%M:%S') "UPGRADE - Reverting to previous docker-compose.yaml" >> ${LOG_FILE};
   cp "${COMPOSE_FILE}.bak."* "${COMPOSE_FILE}"
+  docker compose pull
   docker compose -f "$COMPOSE_FILE" up -d
   # Send Discord webhook notification
   if [[ -n "${DISCORD_WEBHOOK_URL:-}" ]]; then
