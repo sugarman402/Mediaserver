@@ -55,6 +55,20 @@ services:
       - "${TRAEFIK_LETSENCRYPT}:/letsencrypt"
       - "${TRAEFIK_FOLDER}:${TRAEFIK_LOGS_FOLDER}"
       # Using host network mode for direct port binding
+  samba:
+    image: dockurr/samba:4.22.6
+    restart: ${RESTART_POLICY}
+    container_name: samba
+    network_mode: "host" # Required for binding to host ports 445
+    environment:
+      NAME: "mediaserver"
+      USER: "${SAMBA_USER}"
+      PASS: "${SAMBA_PASSWORD}"
+    ports:
+      - ${SAMBA_PORT}:${SAMBA_PORT}
+    volumes:
+      - ${SAMBA_SHARE}:/storage
+
   # Media stack
   plex:
     image: linuxserver/plex:1.43.0
