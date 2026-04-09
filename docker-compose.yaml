@@ -15,7 +15,7 @@ services:
     ports:
       - ${PORTAINER_PORT}:${PORTAINER_PORT}
   traefik:
-    image: library/traefik:v3.6.12
+    image: library/traefik:v3.6.13
     restart: ${RESTART_POLICY}
     container_name: "traefik"
     network_mode: "host" # Required for binding to host ports 80/443
@@ -70,7 +70,7 @@ services:
       - ${SAMBA_SHARE}:/storage
   # Media stack
   plex:
-    image: linuxserver/plex:1.43.0
+    image: linuxserver/plex:1.43.1
     container_name: plex
     network_mode: "host" #Workaround because of the introduction of Plex's stream pass
     environment:
@@ -297,7 +297,7 @@ services:
       #Monitoring stack
   prometheus:
     container_name: prometheus
-    image: prom/prometheus:v3.11.0
+    image: prom/prometheus:v3.11.1
     volumes:
       - ${PROM_CONFIG}/etc/:/etc/prometheus/
       - ${PROM_CONFIG}:/prometheus
@@ -317,7 +317,7 @@ services:
     restart: ${RESTART_POLICY}
   node-exporter:
     container_name: node-exporter
-    image: prom/node-exporter:v1.11.0
+    image: prom/node-exporter:v1.11.1
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -334,7 +334,7 @@ services:
       mode: global
   alertmanager:
     container_name: alertmanager
-    image: prom/alertmanager:v0.31.1
+    image: prom/alertmanager:v0.32.0
     ports:
       - ${ALERTMANAGER_PORT2}:${ALERTMANAGER_PORT2}
       - ${ALERTMANAGER_PORT1}:${ALERTMANAGER_PORT1}
@@ -374,7 +374,7 @@ services:
       mode: global
   grafana:
     container_name: grafana
-    image: grafana/grafana:13.0.0-23943897787
+    image: grafana/grafana:13.0.0-24165874688
     user: "472"
     ports:
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
@@ -444,7 +444,7 @@ services:
       - "default"
       #Testing stack
   code-server:
-    image: linuxserver/code-server:4.114.0
+    image: linuxserver/code-server:4.115.0
     container_name: code-server
     environment:
       - PUID=1000
