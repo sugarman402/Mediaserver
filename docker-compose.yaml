@@ -15,7 +15,7 @@ services:
     ports:
       - ${PORTAINER_PORT}:${PORTAINER_PORT}
   traefik:
-    image: library/traefik:v3.6.13
+    image: library/traefik:v3.6.14
     restart: ${RESTART_POLICY}
     container_name: "traefik"
     network_mode: "host" # Required for binding to host ports 80/443
@@ -96,7 +96,7 @@ services:
       - "traefik.http.routers.plex.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.plex.tls=true"
   scheduler:
-    image: mcuadros/ofelia:0.3.21
+    image: mcuadros/ofelia:0.3.22
     container_name: scheduler
     restart: ${RESTART_POLICY}
     depends_on:
@@ -109,7 +109,7 @@ services:
       ofelia.job-exec.plextraktsync.container: "plextraktsync"
       ofelia.job-exec.plextraktsync.command: "plextraktsync sync"
   plextraktsync:
-    image: ghcr.io/taxel/plextraktsync:0.35.2
+    image: ghcr.io/taxel/plextraktsync:0.35.5
     container_name: plextraktsync
     command: watch
     restart: ${RESTART_POLICY}
@@ -297,7 +297,7 @@ services:
       #Monitoring stack
   prometheus:
     container_name: prometheus
-    image: prom/prometheus:v3.11.1
+    image: prom/prometheus:v3.11.2
     volumes:
       - ${PROM_CONFIG}/etc/:/etc/prometheus/
       - ${PROM_CONFIG}:/prometheus
@@ -374,7 +374,7 @@ services:
       mode: global
   grafana:
     container_name: grafana
-    image: grafana/grafana:13.0.0-24165874688
+    image: grafana/grafana:13.1.0-24866141508
     user: "472"
     ports:
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
@@ -444,7 +444,7 @@ services:
       - "default"
       #Testing stack
   code-server:
-    image: linuxserver/code-server:4.115.0
+    image: linuxserver/code-server:4.117.0
     container_name: code-server
     environment:
       - PUID=1000
