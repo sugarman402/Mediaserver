@@ -5,7 +5,7 @@ networks:
 services:
   #Administration & Management stack
   portainer:
-    image: portainer/portainer-ce:2.40.0
+    image: portainer/portainer-ce:2.41.1
     container_name: portainer
     restart: ${RESTART_POLICY}
     volumes:
@@ -15,7 +15,7 @@ services:
     ports:
       - ${PORTAINER_PORT}:${PORTAINER_PORT}
   traefik:
-    image: library/traefik:v3.6.14
+    image: library/traefik:v3.7.1
     restart: ${RESTART_POLICY}
     container_name: "traefik"
     network_mode: "host" # Required for binding to host ports 80/443
@@ -56,7 +56,7 @@ services:
       - "${TRAEFIK_FOLDER}:${TRAEFIK_LOGS_FOLDER}"
       # Using host network mode for direct port binding
   samba:
-    image: dockurr/samba:4.23.5
+    image: dockurr/samba:4.23.7
     restart: ${RESTART_POLICY}
     container_name: samba
     network_mode: "host" # Required for binding to host ports 445
@@ -124,7 +124,7 @@ services:
       - "${TRAEFIK_NETWORK}"
       - "default"
   tautulli:
-    image: tautulli/tautulli:v2.17.0
+    image: tautulli/tautulli:v2.17.1
     container_name: tautulli
     environment:
       - PUID=1000
@@ -261,7 +261,7 @@ services:
       - "default"
       # Downloaders
   qbittorrent:
-    image: linuxserver/qbittorrent:5.1.4
+    image: linuxserver/qbittorrent:5.2.0
     container_name: qbittorrent
     environment:
       - PUID=1000
@@ -297,7 +297,7 @@ services:
       #Monitoring stack
   prometheus:
     container_name: prometheus
-    image: prom/prometheus:v3.11.2
+    image: prom/prometheus:v3.11.3
     volumes:
       - ${PROM_CONFIG}/etc/:/etc/prometheus/
       - ${PROM_CONFIG}:/prometheus
@@ -334,7 +334,7 @@ services:
       mode: global
   alertmanager:
     container_name: alertmanager
-    image: prom/alertmanager:v0.32.0
+    image: prom/alertmanager:v0.32.1
     ports:
       - ${ALERTMANAGER_PORT2}:${ALERTMANAGER_PORT2}
       - ${ALERTMANAGER_PORT1}:${ALERTMANAGER_PORT1}
@@ -374,7 +374,7 @@ services:
       mode: global
   grafana:
     container_name: grafana
-    image: grafana/grafana:13.1.0-24866141508
+    image: grafana/grafana:13.1.0-25893932881
     user: "472"
     ports:
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
@@ -428,11 +428,10 @@ services:
       - prowlarr
   qbittorrent-exporter:
     container_name: qbittorrent-exporter
-    image: ghcr.io/martabal/qbittorrent-exporter:v1.13.4
+    image: ghcr.io/martabal/qbittorrent-exporter:v2.0.1
     environment:
       QBITTORRENT_BASE_URL: http://qbittorrent:${QB_PORT}
-      QBITTORRENT_USERNAME: ${QB_USER}
-      QBITTORRENT_PASSWORD: ${QB_PW}
+      QBITTORRENT_API_KEY: ${QB_API_KEY}
       EXPORTER_PORT: ${QBEXP_PORT}
     ports:
       - "${QBEXP_PORT}:${QBEXP_PORT}"
@@ -444,7 +443,7 @@ services:
       - "default"
       #Testing stack
   code-server:
-    image: linuxserver/code-server:4.117.0
+    image: linuxserver/code-server:4.118.0
     container_name: code-server
     environment:
       - PUID=1000
