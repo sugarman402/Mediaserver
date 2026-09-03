@@ -5,7 +5,7 @@ networks:
 services:
   #Administration & Management stack
   portainer:
-    image: portainer/portainer-ce:2.44.0
+    image: portainer/portainer-ce:2.45.0
     container_name: portainer
     restart: ${RESTART_POLICY}
     volumes:
@@ -15,7 +15,7 @@ services:
     ports:
       - ${PORTAINER_PORT}:${PORTAINER_PORT}
   traefik:
-    image: library/traefik:v3.7.10
+    image: library/traefik:v3.7.12
     restart: ${RESTART_POLICY}
     container_name: "traefik"
     network_mode: "host" # Required for binding to host ports 80/443
@@ -96,7 +96,7 @@ services:
       - "traefik.http.routers.plex.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.plex.tls=true"
   tautulli:
-    image: tautulli/tautulli:v2.17.2
+    image: tautulli/tautulli:v2.18.1
     container_name: tautulli
     environment:
       - PUID=1000
@@ -269,7 +269,7 @@ services:
       #Monitoring stack
   prometheus:
     container_name: prometheus
-    image: prom/prometheus:v3.13.2
+    image: prom/prometheus:v3.14.0
     volumes:
       - ${PROM_CONFIG}/etc/:/etc/prometheus/
       - ${PROM_CONFIG}:/prometheus
@@ -306,7 +306,7 @@ services:
       mode: global
   alertmanager:
     container_name: alertmanager
-    image: prom/alertmanager:v0.33.1
+    image: prom/alertmanager:v0.34.0
     ports:
       - ${ALERTMANAGER_PORT2}:${ALERTMANAGER_PORT2}
       - ${ALERTMANAGER_PORT1}:${ALERTMANAGER_PORT1}
@@ -346,7 +346,7 @@ services:
       mode: global
   grafana:
     container_name: grafana
-    image: grafana/grafana:13.1.3
+    image: grafana/grafana:13.2.0
     user: "472"
     ports:
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
@@ -400,7 +400,7 @@ services:
       - prowlarr
   qbittorrent-exporter:
     container_name: qbittorrent-exporter
-    image: ghcr.io/martabal/qbittorrent-exporter:v2.0.1
+    image: ghcr.io/martabal/qbittorrent-exporter:v2.0.3
     environment:
       QBITTORRENT_BASE_URL: http://qbittorrent:${QB_PORT}
       QBITTORRENT_API_KEY: ${QB_API_KEY}
@@ -415,7 +415,7 @@ services:
       - "default"
       #Testing stack
   code-server:
-    image: linuxserver/code-server:4.131.0
+    image: linuxserver/code-server:4.135.0
     container_name: code-server
     environment:
       - PUID=1000
