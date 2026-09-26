@@ -4,16 +4,6 @@ networks:
     name: ${TRAEFIK_NETWORK}
 services:
   #Administration & Management stack
-  portainer:
-    image: portainer/portainer-ce:2.45.1
-    container_name: portainer
-    restart: ${RESTART_POLICY}
-    volumes:
-      - ${PORTAINER_LOCALTIME}:/etc/localtime:ro
-      - ${DOCKER_SOCK}:${DOCKER_SOCK}:ro
-      - ${PORTAINER_DATA}:/data
-    ports:
-      - ${PORTAINER_PORT}:${PORTAINER_PORT}
   traefik:
     image: library/traefik:v3.7.13
     restart: ${RESTART_POLICY}
