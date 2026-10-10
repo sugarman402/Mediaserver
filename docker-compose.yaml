@@ -86,7 +86,7 @@ services:
       - "traefik.http.routers.plex.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.plex.tls=true"
   tautulli:
-    image: tautulli/tautulli:v2.18.1
+    image: tautulli/tautulli:v2.18.2
     container_name: tautulli
     environment:
       - PUID=1000
@@ -174,7 +174,7 @@ services:
       - "${TRAEFIK_NETWORK}"
       - "default"
   bazarr:
-    image: linuxserver/bazarr:1.6.1
+    image: linuxserver/bazarr:1.6.2
     container_name: bazarr
     environment:
       - PUID=1000
@@ -223,7 +223,7 @@ services:
       - "default"
       # Downloaders
   qbittorrent:
-    image: linuxserver/qbittorrent:5.2.3
+    image: linuxserver/qbittorrent:5.2.4
     container_name: qbittorrent
     environment:
       - PUID=1000
@@ -259,7 +259,7 @@ services:
       #Monitoring stack
   prometheus:
     container_name: prometheus
-    image: prom/prometheus:v3.14.0
+    image: prom/prometheus:v3.15.0
     volumes:
       - ${PROM_CONFIG}/etc/:/etc/prometheus/
       - ${PROM_CONFIG}:/prometheus
@@ -336,7 +336,7 @@ services:
       mode: global
   grafana:
     container_name: grafana
-    image: grafana/grafana:13.2.2
+    image: grafana/grafana:13.2.3
     user: "472"
     ports:
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
@@ -405,7 +405,7 @@ services:
       - "default"
       #Testing stack
   code-server:
-    image: linuxserver/code-server:4.138.0
+    image: linuxserver/code-server:4.140.0
     container_name: code-server
     environment:
       - PUID=1000
