@@ -5,7 +5,7 @@ networks:
 services:
   #Administration & Management stack
   traefik:
-    image: library/traefik:v3.7.13
+    image: library/traefik:v3.7.14
     restart: ${RESTART_POLICY}
     container_name: "traefik"
     network_mode: "host" # Required for binding to host ports 80/443
@@ -308,7 +308,7 @@ services:
       - '--storage.path=/alertmanager'
   smartctl-exporter:
     container_name: smartctl-exporter
-    image: prometheuscommunity/smartctl-exporter:v0.14.0
+    image: prometheuscommunity/smartctl-exporter:v0.15.0
     privileged: true
     user: root
     ports:
@@ -405,7 +405,7 @@ services:
       - "default"
       #Testing stack
   code-server:
-    image: linuxserver/code-server:4.140.0
+    image: linuxserver/code-server:4.141.0
     container_name: code-server
     environment:
       - PUID=1000
