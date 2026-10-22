@@ -5,7 +5,7 @@ networks:
 services:
   #Administration & Management stack
   traefik:
-    image: library/traefik:v3.7.14
+    image: library/traefik:v3.7.16
     restart: ${RESTART_POLICY}
     container_name: "traefik"
     network_mode: "host" # Required for binding to host ports 80/443
@@ -60,7 +60,7 @@ services:
       - ${SAMBA_SHARE}:/storage
   # Media stack
   plex:
-    image: linuxserver/plex:1.43.4
+    image: linuxserver/plex:1.43.5
     container_name: plex
     network_mode: "host" #Workaround because of the introduction of Plex's stream pass
     environment:
@@ -223,7 +223,7 @@ services:
       - "default"
       # Downloaders
   qbittorrent:
-    image: linuxserver/qbittorrent:5.2.4
+    image: linuxserver/qbittorrent:5.3.0
     container_name: qbittorrent
     environment:
       - PUID=1000
@@ -259,7 +259,7 @@ services:
       #Monitoring stack
   prometheus:
     container_name: prometheus
-    image: prom/prometheus:v3.15.0
+    image: prom/prometheus:v3.15.1
     volumes:
       - ${PROM_CONFIG}/etc/:/etc/prometheus/
       - ${PROM_CONFIG}:/prometheus
@@ -336,7 +336,7 @@ services:
       mode: global
   grafana:
     container_name: grafana
-    image: grafana/grafana:13.2.3
+    image: grafana/grafana:13.2.4
     user: "472"
     ports:
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
