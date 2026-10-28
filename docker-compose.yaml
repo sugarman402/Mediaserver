@@ -157,7 +157,7 @@ services:
       - "traefik.http.routers.sonarr.tls.certresolver=${TRAEFIK_RESOLVER}"
       - "traefik.http.routers.sonarr.tls=true"
   prowlarr:
-    image: linuxserver/prowlarr:2.6.5
+    image: linuxserver/prowlarr:2.7.0
     container_name: prowlarr
     environment:
       - PUID=1000
@@ -336,7 +336,7 @@ services:
       mode: global
   grafana:
     container_name: grafana
-    image: grafana/grafana:13.2.4
+    image: grafana/grafana:13.3.0
     user: "472"
     ports:
       - ${GRAFANA_PORT}:${GRAFANA_PORT}
@@ -390,7 +390,7 @@ services:
       - prowlarr
   qbittorrent-exporter:
     container_name: qbittorrent-exporter
-    image: ghcr.io/martabal/qbittorrent-exporter:v2.0.3
+    image: ghcr.io/martabal/qbittorrent-exporter:v2.0.4
     environment:
       QBITTORRENT_BASE_URL: http://qbittorrent:${QB_PORT}
       QBITTORRENT_API_KEY: ${QB_API_KEY}
@@ -405,7 +405,7 @@ services:
       - "default"
       #Testing stack
   code-server:
-    image: linuxserver/code-server:4.141.0
+    image: linuxserver/code-server:4.143.1
     container_name: code-server
     environment:
       - PUID=1000

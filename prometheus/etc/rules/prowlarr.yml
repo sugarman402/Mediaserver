@@ -2,7 +2,7 @@ groups:
 - name: prowlarr
   rules:
   - alert: ProwlarrLowEnabledIndexersRatio
-    expr: ((prowlarr_indexer_enabled_total / prowlarr_indexer_total) * 100 < 100) OR (prowlarr_system_health_issues > 0)
+    expr: ((prowlarr_indexer_enabled_total / prowlarr_indexer_total) * 100 < 100) OR (prowlarr_system_health_issues{source!="UpdateCheck"} > 0)
     for: 5m
     labels:
       severity: warning
