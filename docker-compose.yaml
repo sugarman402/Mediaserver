@@ -16,10 +16,12 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:${TRAEFIK_WEB_PORT}"
       - "--entrypoints.websecure.address=:${TRAEFIK_WEBSECURE_PORT}"
+      - "--entrypoints.websecure.http.middlewares=geoblock@file"
       - "--entrypoints.traefik.address=:${TRAEFIK_DASHBOARD_PORT}"
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.web.http.middlewares=geoblock@file"
       - "--certificatesresolvers.${TRAEFIK_RESOLVER}.acme.tlschallenge=true"
       - "--certificatesresolvers.${TRAEFIK_RESOLVER}.acme.caserver=${TRAEFIK_CASERVER}"
       - "--certificatesresolvers.${TRAEFIK_RESOLVER}.acme.email=${TRAEFIK_CASERVER_EMAIL}"
@@ -36,6 +38,10 @@ services:
       - "--metrics.prometheus.addEntryPointsLabels=true"
       - "--metrics.prometheus.addServicesLabels=true"
       - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
+      - "--experimental.plugins.geoblock.modulename=github.com/PascalMinder/geoblock"
+      - "--experimental.plugins.geoblock.version=v0.3.8"
+      - "--providers.file.filename=${TRAEFIK_ETC_FOLDER}/dynamic-configuration.yaml"
+      - "--providers.file.watch=true"
     ports:
       - "${TRAEFIK_WEB_PORT}:${TRAEFIK_WEB_PORT}"
       - "${TRAEFIK_DASHBOARD_PORT}:${TRAEFIK_DASHBOARD_PORT}"
@@ -43,7 +49,8 @@ services:
     volumes:
       - "${DOCKER_SOCK}:${DOCKER_SOCK}:ro"
       - "${TRAEFIK_LETSENCRYPT}:/letsencrypt"
-      - "${TRAEFIK_FOLDER}:${TRAEFIK_LOGS_FOLDER}"
+      - "${TRAEFIK_FOLDER}/access.log:${TRAEFIK_LOGS_FOLDER}/access.log:rw"
+      - "${TRAEFIK_FOLDER}/dynamic-config.yaml:${TRAEFIK_ETC_FOLDER}/dynamic-configuration.yaml"
       # Using host network mode for direct port binding
   samba:
     image: dockurr/samba:4.23.10
@@ -296,7 +303,7 @@ services:
       mode: global
   alertmanager:
     container_name: alertmanager
-    image: prom/alertmanager:v0.34.1
+    image: prom/alertmanager:v0.34.2
     ports:
       - ${ALERTMANAGER_PORT2}:${ALERTMANAGER_PORT2}
       - ${ALERTMANAGER_PORT1}:${ALERTMANAGER_PORT1}
@@ -405,7 +412,7 @@ services:
       - "default"
       #Testing stack
   code-server:
-    image: linuxserver/code-server:4.143.1
+    image: linuxserver/code-server:4.144.0
     container_name: code-server
     environment:
       - PUID=1000

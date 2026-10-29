@@ -37,3 +37,8 @@ prometheus/etc/*
 # Ensure prometheus rules directory and all files are tracked
 !prometheus/etc/rules/
 !prometheus/etc/rules/**
+
+# Track Traefik directory, but ignore everything inside by default
+!traefik/
+traefik/*
+!traefik/dynamic-config.yaml
