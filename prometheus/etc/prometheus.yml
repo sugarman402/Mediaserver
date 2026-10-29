@@ -51,13 +51,6 @@ scrape_configs:
         labels:
           app: 'traefik'
           host: 'mediaserver'
-  - job_name: 'hassbian-node-exporter'
-    scrape_interval: 30s
-    static_configs:
-      - targets: ['hassbian:9100']
-        labels:
-          app: 'node-exporter'
-          host: 'hassbian'
   - job_name: 'qbittorrent-exporter'
     scrape_interval: 30s
     static_configs:
