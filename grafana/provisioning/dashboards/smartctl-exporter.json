@@ -2108,7 +2108,7 @@
                           "mode": "variable",
                           "value": "attribute_name"
                         },
-                        "width": 12,
+                        "width": 24,
                         "x": 0,
                         "y": 0
                       }
@@ -2127,7 +2127,7 @@
                         },
                         "width": 12,
                         "x": 12,
-                        "y": 0
+                        "y": 154
                       }
                     }
                   ]
@@ -2223,9 +2223,7 @@
         "spec": {
           "allowCustomValue": true,
           "current": {
-            "text": [
-              "All"
-            ],
+            "text": "All",
             "value": [
               "$__all"
             ]
@@ -2262,22 +2260,10 @@
           "allowCustomValue": true,
           "current": {
             "text": [
-              "Load_Retry_Count",
-              "Load_Cycle_Count",
-              "Offline_Uncorrectable",
-              "Power-Off_Retract_Count",
-              "Power_On_Hours",
-              "Power_Cycle_Count",
-              "Raw_Read_Error_Rate"
+              "All"
             ],
             "value": [
-              "Load_Retry_Count",
-              "Load_Cycle_Count",
-              "Offline_Uncorrectable",
-              "Power-Off_Retract_Count",
-              "Power_On_Hours",
-              "Power_Cycle_Count",
-              "Raw_Read_Error_Rate"
+              "$__all"
             ]
           },
           "definition": "label_values(smartctl_device_attribute{device=~\"$disk\"}, attribute_name)",
