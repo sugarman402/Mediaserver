@@ -19,3 +19,5 @@ http:
           blackListMode: false
           countries:
             - HU
+          excludedPathPatterns:
+            - "^/\\.well-known/acme-challenge/.*$"
